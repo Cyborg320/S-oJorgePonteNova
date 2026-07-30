@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>São Jorge Gás - Sistema</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topo">
+
+
+<div class="logo-area">
+
+<img src="logo.png" alt="São Jorge Gás" onerror="this.style.display='none'">
+
+</div>
+
+
+<div>
+
+<h1>São Jorge Gás</h1>
+
+<p>Sistema de Controle</p>
+
+</div>
+
+
+</header>
+
+
+
+
+
+<main>
+
+
+
+
+
+<!-- =========================
+NOTA FISCAL
+========================= -->
+
+<section class="card">
+
+
+<h2>📄 Calculadora Nota Fiscal</h2>
+
+
+<label>Tipo de Gás</label>
+
+
+<select id="tipoGasNota">
+
+<option value="P13">
+P13
+</option>
+
+<option value="P20">
+P20
+</option>
+
+<option value="P45">
+P45
+</option>
+
+</select>
+
+
+
+<label>Tabela P13</label>
+
+
+<select id="tabelaNota">
+
+<option value="76">
+Tabela 76
+</option>
+
+<option value="78">
+Tabela 78
+</option>
+
+<option value="80">
+Tabela 80
+</option>
+
+</select>
+
+
+
+
+<label>Valor da Nota</label>
+
+
+<input id="valorNota" placeholder="Digite o valor">
+
+
+<div class="botoes">
+
+
+<button onclick="calcularNota()">
+Calcular
+</button>
+
+
+
+<button onclick="adicionarNotaFechamento()">
+Adicionar Fechamento
+</button>
+
+
+</div>
+
+
+
+<div id="resultadoNota" class="resultado"></div>
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- =========================
+RAMPA
+========================= -->
+
+
+<section class="card">
+
+
+<h2>🚛 Calculadora Rampa</h2>
+
+
+<p>
+Informe:
+<br>
+Altura × Fileira × Coluna
+</p>
+
+
+
+<h3>Principal</h3>
+
+
+
+<div class="grid">
+
+
+<input id="rAltura" placeholder="Altura">
+
+
+<input id="rFileira" placeholder="Fileira">
+
+
+<input id="rColuna" placeholder="Coluna">
+
+
+</div>
+
+
+
+
+
+
+<h3>Parte Extra 1</h3>
+
+
+
+<div class="grid">
+
+
+<input id="extraAltura1" placeholder="Altura">
+
+
+<input id="extraFileira1" placeholder="Fileira">
+
+
+<input id="extraColuna1" placeholder="Coluna">
+
+
+</div>
+
+
+
+
+
+
+
+<h3>Parte Extra 2</h3>
+
+
+
+<div class="grid">
+
+
+<input id="extraAltura2" placeholder="Altura">
+
+
+<input id="extraFileira2" placeholder="Fileira">
+
+
+<input id="extraColuna2" placeholder="Coluna">
+
+
+</div>
+
+
+
+
+
+<button onclick="calcularRampa()">
+
+Calcular Rampa
+
+</button>
+
+
+
+<div id="resultadoRampa" class="resultado"></div>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- =========================
+CONTAGEM MANUAL
+========================= -->
+
+
+<section class="card">
+
+
+<h2>📦 Contagem Manual</h2>
+
+
+
+
+<select id="produtoFechamento">
+
+
+<option>
+P13 Cheio
+</option>
+
+
+<option>
+P13 Vazio
+</option>
+
+
+<option>
+P20 Cheio
+</option>
+
+
+<option>
+P20 Vazio
+</option>
+
+
+<option>
+P45 Cheio
+</option>
+
+
+<option>
+P45 Vazio
+</option>
+
+
+</select>
+
+
+
+
+
+<input 
+id="quantidadeFechamento"
+type="number"
+placeholder="Quantidade">
+
+
+
+
+
+<button onclick="adicionarManual()">
+
+Adicionar
+
+</button>
+
+
+
+
+
+
+<table>
+
+
+<thead>
+
+
+<tr>
+
+<th>
+Produto
+</th>
+
+
+<th>
+Quantidade
+</th>
+
+
+<th>
+Ação
+</th>
+
+
+</tr>
+
+
+</thead>
+
+
+
+<tbody id="tabelaFechamento">
+
+
+</tbody>
+
+
+
+</table>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+<!-- =========================
+RESUMO
+========================= -->
+
+
+<section class="card">
+
+
+<h2>📊 Resumo</h2>
+
+
+
+<div id="resumoFechamento" class="resultado">
+
+</div>
+
+
+
+<button onclick="salvarHistorico()">
+
+Salvar Histórico
+
+</button>
+
+
+
+<button onclick="gerarPDF()">
+
+Gerar PDF
+
+</button>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- =========================
+HISTÓRICO
+========================= -->
+
+
+<section class="card">
+
+
+<h2>📜 Histórico</h2>
+
+
+<div id="historico" class="resultado">
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- =========================
+ASSISTENTE
+========================= -->
+
+
+<section class="card">
+
+
+<h2>🤖 Assistente São Jorge</h2>
+
+
+
+<div id="chatIA" class="chat">
+
+
+<p>
+Olá! Sou o assistente do sistema São Jorge Gás.
+</p>
+
+
+<p>
+Posso ajudar com nota fiscal, rampa, contagem e fechamento.
+</p>
+
+
+</div>
+
+
+
+
+
+<input 
+id="perguntaIA"
+placeholder="Digite sua pergunta">
+
+
+
+
+
+<button onclick="perguntarIA()">
+
+Enviar
+
+</button>
+
+
+
+</section>
+
+
+
+
+
+
+
+</main>
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+
+<script src="script.js"></script>
+
+
+
+</body>
+
+
+</html>

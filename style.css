@@ -1,0 +1,498 @@
+/* =====================================
+SÃO JORGE GÁS
+STYLE PROFISSIONAL
+PRETO / VERMELHO / BRANCO
+===================================== */
+
+
+*{
+
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Segoe UI", Arial, sans-serif;
+
+}
+
+
+
+body{
+
+    background:#050505;
+    color:#fff;
+    min-height:100vh;
+    padding:20px;
+
+}
+
+
+
+
+/* =====================
+TOPO
+===================== */
+
+
+.topo{
+
+    max-width:1200px;
+    margin:auto;
+
+    display:flex;
+    align-items:center;
+    gap:20px;
+
+    background:#111;
+
+    padding:20px;
+
+    border-radius:15px;
+
+    border-left:6px solid #c90000;
+
+    box-shadow:
+    0 0 20px rgba(0,0,0,.8);
+
+}
+
+
+
+.logo-area{
+
+    width:100px;
+    height:100px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+}
+
+
+
+.logo-area img{
+
+    max-width:100%;
+    max-height:100%;
+
+}
+
+
+
+
+.topo h1{
+
+    color:#e00000;
+
+    font-size:36px;
+
+}
+
+
+
+.topo p{
+
+    color:#ddd;
+
+    margin-top:5px;
+
+}
+
+
+
+
+
+
+/* =====================
+CONTEÚDO
+===================== */
+
+
+main{
+
+    max-width:1200px;
+
+    margin:30px auto;
+
+}
+
+
+
+
+
+
+
+/* =====================
+CARDS
+===================== */
+
+
+.card{
+
+    background:#121212;
+
+    padding:25px;
+
+    margin-bottom:25px;
+
+    border-radius:18px;
+
+    border:
+
+    1px solid #292929;
+
+
+    box-shadow:
+
+    0 8px 25px rgba(0,0,0,.6);
+
+
+}
+
+
+
+
+
+.card h2{
+
+    color:#fff;
+
+    border-bottom:
+
+    2px solid #d00000;
+
+    padding-bottom:12px;
+
+    margin-bottom:20px;
+
+}
+
+
+
+.card h3{
+
+    color:#e00000;
+
+    margin:15px 0 10px;
+
+}
+
+
+
+
+
+
+
+
+/* =====================
+INPUTS
+===================== */
+
+
+input,
+select{
+
+
+    width:100%;
+
+    background:#1d1d1d;
+
+    color:white;
+
+    border:
+
+    1px solid #444;
+
+
+    padding:13px;
+
+    border-radius:10px;
+
+    margin-bottom:12px;
+
+
+}
+
+
+
+input::placeholder{
+
+    color:#999;
+
+}
+
+
+
+
+input:focus,
+select:focus{
+
+    outline:none;
+
+    border-color:#d00000;
+
+}
+
+
+
+
+
+
+
+
+/* =====================
+GRID RAMPA
+===================== */
+
+
+.grid{
+
+    display:grid;
+
+    grid-template-columns:
+
+    repeat(3,1fr);
+
+    gap:15px;
+
+
+}
+
+
+
+
+
+
+
+/* =====================
+BOTÕES
+===================== */
+
+
+button{
+
+
+    background:#c90000;
+
+    color:white;
+
+    border:none;
+
+    padding:13px 22px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-weight:bold;
+
+    margin:8px 5px 0 0;
+
+    transition:.2s;
+
+
+}
+
+
+
+button:hover{
+
+    background:#ff0000;
+
+    transform:translateY(-2px);
+
+}
+
+
+
+
+
+.botoes{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+}
+
+
+
+
+
+
+
+
+/* =====================
+RESULTADOS
+===================== */
+
+
+.resultado{
+
+
+    margin-top:20px;
+
+    background:#080808;
+
+    padding:20px;
+
+    border-radius:12px;
+
+    border:
+
+    1px solid #333;
+
+    line-height:1.8;
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================
+TABELA
+===================== */
+
+
+table{
+
+    width:100%;
+
+    margin-top:20px;
+
+    border-collapse:collapse;
+
+}
+
+
+
+th{
+
+    background:#c90000;
+
+    padding:12px;
+
+    color:white;
+
+}
+
+
+
+td{
+
+    padding:12px;
+
+    text-align:center;
+
+    border-bottom:
+
+    1px solid #333;
+
+
+}
+
+
+
+
+
+
+tr:hover{
+
+    background:#1c1c1c;
+
+}
+
+
+
+
+
+
+
+
+/* =====================
+CHAT IA
+===================== */
+
+
+.chat{
+
+
+    background:#080808;
+
+    border-radius:12px;
+
+    padding:20px;
+
+    min-height:130px;
+
+    border:
+
+    1px solid #333;
+
+
+}
+
+
+
+.chat p{
+
+    margin-bottom:12px;
+
+}
+
+
+
+
+
+
+
+/* =====================
+RESPONSIVO
+===================== */
+
+
+@media(max-width:800px){
+
+
+
+    body{
+
+        padding:10px;
+
+    }
+
+
+
+    .topo{
+
+        flex-direction:column;
+
+        text-align:center;
+
+    }
+
+
+
+    .grid{
+
+        grid-template-columns:
+
+        1fr;
+
+    }
+
+
+
+    button{
+
+        width:100%;
+
+    }
+
+
+}
