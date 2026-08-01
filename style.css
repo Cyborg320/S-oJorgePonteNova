@@ -1,16 +1,19 @@
-/* =====================================
+/* ===================================
 SÃO JORGE GÁS
-STYLE PROFISSIONAL
-PRETO / VERMELHO / BRANCO
-===================================== */
+STYLE DEFINITIVO
+=================================== */
 
 
 *{
 
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:"Segoe UI", Arial, sans-serif;
+margin:0;
+padding:0;
+box-sizing:border-box;
+
+font-family:
+"Segoe UI",
+Arial,
+sans-serif;
 
 }
 
@@ -18,83 +21,84 @@ PRETO / VERMELHO / BRANCO
 
 body{
 
-    background:#050505;
-    color:#fff;
-    min-height:100vh;
-    padding:20px;
+background:#050505;
+
+color:white;
+
+min-height:100vh;
+
+padding:20px;
 
 }
 
 
 
-
-/* =====================
+/* =========================
 TOPO
-===================== */
+========================= */
 
 
 .topo{
 
-    max-width:1200px;
-    margin:auto;
 
-    display:flex;
-    align-items:center;
-    gap:20px;
+max-width:1200px;
 
-    background:#111;
+margin:auto;
 
-    padding:20px;
+display:flex;
 
-    border-radius:15px;
+align-items:center;
 
-    border-left:6px solid #c90000;
+gap:20px;
 
-    box-shadow:
-    0 0 20px rgba(0,0,0,.8);
+
+background:#111;
+
+padding:20px;
+
+border-radius:18px;
+
+
+border-left:
+
+6px solid #c90000;
+
+
+box-shadow:
+
+0 10px 30px rgba(0,0,0,.8);
+
 
 }
 
 
 
-.logo-area{
+.logo img{
 
-    width:100px;
-    height:100px;
 
-    display:flex;
-    align-items:center;
-    justify-content:center;
+width:100px;
+
+height:100px;
+
+object-fit:contain;
+
 
 }
-
-
-
-.logo-area img{
-
-    max-width:100%;
-    max-height:100%;
-
-}
-
 
 
 
 .topo h1{
 
-    color:#e00000;
+color:#e00000;
 
-    font-size:36px;
+font-size:36px;
 
 }
-
 
 
 .topo p{
 
-    color:#ddd;
-
-    margin-top:5px;
+color:#ccc;
 
 }
 
@@ -103,48 +107,37 @@ TOPO
 
 
 
-/* =====================
-CONTEÚDO
-===================== */
+/* =========================
+MENU
+========================= */
 
 
-main{
+.menu{
 
-    max-width:1200px;
 
-    margin:30px auto;
+max-width:1200px;
+
+margin:20px auto;
+
+
+display:flex;
+
+flex-wrap:wrap;
+
+gap:10px;
+
 
 }
 
 
 
+.menu button{
 
 
+flex:1;
 
 
-/* =====================
-CARDS
-===================== */
-
-
-.card{
-
-    background:#121212;
-
-    padding:25px;
-
-    margin-bottom:25px;
-
-    border-radius:18px;
-
-    border:
-
-    1px solid #292929;
-
-
-    box-shadow:
-
-    0 8px 25px rgba(0,0,0,.6);
+min-width:150px;
 
 
 }
@@ -152,143 +145,36 @@ CARDS
 
 
 
-
-.card h2{
-
-    color:#fff;
-
-    border-bottom:
-
-    2px solid #d00000;
-
-    padding-bottom:12px;
-
-    margin-bottom:20px;
-
-}
-
-
-
-.card h3{
-
-    color:#e00000;
-
-    margin:15px 0 10px;
-
-}
-
-
-
-
-
-
-
-
-/* =====================
-INPUTS
-===================== */
-
-
-input,
-select{
-
-
-    width:100%;
-
-    background:#1d1d1d;
-
-    color:white;
-
-    border:
-
-    1px solid #444;
-
-
-    padding:13px;
-
-    border-radius:10px;
-
-    margin-bottom:12px;
-
-
-}
-
-
-
-input::placeholder{
-
-    color:#999;
-
-}
-
-
-
-
-input:focus,
-select:focus{
-
-    outline:none;
-
-    border-color:#d00000;
-
-}
-
-
-
-
-
-
-
-
-/* =====================
-GRID RAMPA
-===================== */
-
-
-.grid{
-
-    display:grid;
-
-    grid-template-columns:
-
-    repeat(3,1fr);
-
-    gap:15px;
-
-
-}
-
-
-
-
-
-
-
-/* =====================
+/* =========================
 BOTÕES
-===================== */
+========================= */
 
 
 button{
 
 
-    background:#c90000;
+background:#c90000;
 
-    color:white;
 
-    border:none;
+color:white;
 
-    padding:13px 22px;
 
-    border-radius:10px;
+border:none;
 
-    cursor:pointer;
 
-    font-weight:bold;
+padding:12px 20px;
 
-    margin:8px 5px 0 0;
 
-    transition:.2s;
+border-radius:10px;
+
+
+font-weight:bold;
+
+
+cursor:pointer;
+
+
+transition:.3s;
 
 
 }
@@ -297,21 +183,12 @@ button{
 
 button:hover{
 
-    background:#ff0000;
 
-    transform:translateY(-2px);
-
-}
+background:#ff0000;
 
 
+transform:translateY(-2px);
 
-
-
-.botoes{
-
-    display:flex;
-
-    flex-wrap:wrap;
 
 }
 
@@ -321,28 +198,274 @@ button:hover{
 
 
 
+/* =========================
+CONTEÚDO
+========================= */
 
-/* =====================
+
+main{
+
+
+max-width:1200px;
+
+margin:auto;
+
+
+}
+
+
+
+
+.tela{
+
+
+background:#121212;
+
+
+padding:25px;
+
+
+border-radius:18px;
+
+
+border:
+
+1px solid #292929;
+
+
+box-shadow:
+
+0 10px 25px rgba(0,0,0,.7);
+
+
+}
+
+
+
+
+.escondido{
+
+
+display:none;
+
+
+}
+
+
+
+
+
+
+h2{
+
+
+color:#fff;
+
+
+border-bottom:
+
+2px solid #d00000;
+
+
+padding-bottom:10px;
+
+
+margin-bottom:20px;
+
+
+}
+
+
+
+h3{
+
+color:#e00000;
+
+margin:15px 0;
+
+}
+
+
+
+
+
+
+/* =========================
+CARDS DASHBOARD
+========================= */
+
+
+.cards{
+
+
+display:grid;
+
+
+grid-template-columns:
+
+repeat(auto-fit,minmax(180px,1fr));
+
+
+gap:20px;
+
+
+}
+
+
+
+
+.card{
+
+
+background:#1b1b1b;
+
+
+padding:25px;
+
+
+border-radius:15px;
+
+
+text-align:center;
+
+
+border:
+
+1px solid #333;
+
+
+}
+
+
+
+
+.card span{
+
+
+font-size:35px;
+
+
+color:#e00000;
+
+
+font-weight:bold;
+
+
+}
+
+
+
+
+
+
+/* =========================
+FORMULARIOS
+========================= */
+
+
+input,
+select{
+
+
+width:100%;
+
+
+padding:14px;
+
+
+margin-bottom:15px;
+
+
+background:#1b1b1b;
+
+
+border:
+
+1px solid #444;
+
+
+border-radius:10px;
+
+
+color:white;
+
+
+}
+
+
+
+input:focus,
+select:focus{
+
+
+outline:none;
+
+
+border-color:#e00000;
+
+
+}
+
+
+
+
+
+
+
+/* =========================
+GRID RAMPA
+========================= */
+
+
+.grid{
+
+
+display:grid;
+
+
+grid-template-columns:
+
+repeat(3,1fr);
+
+
+gap:15px;
+
+
+}
+
+
+
+
+
+
+
+
+/* =========================
 RESULTADOS
-===================== */
+========================= */
 
 
 .resultado{
 
 
-    margin-top:20px;
+margin-top:20px;
 
-    background:#080808;
 
-    padding:20px;
+background:#080808;
 
-    border-radius:12px;
 
-    border:
+padding:20px;
 
-    1px solid #333;
 
-    line-height:1.8;
+border-radius:15px;
+
+
+border:
+
+1px solid #333;
+
+
+line-height:1.8;
 
 
 }
@@ -354,18 +477,22 @@ RESULTADOS
 
 
 
-/* =====================
-TABELA
-===================== */
+/* =========================
+TABELAS
+========================= */
 
 
 table{
 
-    width:100%;
 
-    margin-top:20px;
+width:100%;
 
-    border-collapse:collapse;
+
+margin-top:20px;
+
+
+border-collapse:collapse;
+
 
 }
 
@@ -373,11 +500,12 @@ table{
 
 th{
 
-    background:#c90000;
 
-    padding:12px;
+background:#c90000;
 
-    color:white;
+
+padding:12px;
+
 
 }
 
@@ -385,13 +513,16 @@ th{
 
 td{
 
-    padding:12px;
 
-    text-align:center;
+padding:12px;
 
-    border-bottom:
 
-    1px solid #333;
+text-align:center;
+
+
+border-bottom:
+
+1px solid #333;
 
 
 }
@@ -401,38 +532,33 @@ td{
 
 
 
-tr:hover{
 
-    background:#1c1c1c;
-
-}
-
-
-
-
-
-
-
-
-/* =====================
+/* =========================
 CHAT IA
-===================== */
+========================= */
 
 
 .chat{
 
 
-    background:#080808;
+background:#080808;
 
-    border-radius:12px;
 
-    padding:20px;
+min-height:180px;
 
-    min-height:130px;
 
-    border:
+padding:20px;
 
-    1px solid #333;
+
+border-radius:15px;
+
+
+border:
+
+1px solid #333;
+
+
+margin-bottom:15px;
 
 
 }
@@ -441,7 +567,9 @@ CHAT IA
 
 .chat p{
 
-    margin-bottom:12px;
+
+margin-bottom:15px;
+
 
 }
 
@@ -451,48 +579,80 @@ CHAT IA
 
 
 
-/* =====================
-RESPONSIVO
-===================== */
+/* =========================
+RODAPÉ
+========================= */
+
+
+footer{
+
+
+text-align:center;
+
+
+margin-top:30px;
+
+
+color:#777;
+
+
+}
+
+
+
+
+
+
+
+/* =========================
+CELULAR
+========================= */
 
 
 @media(max-width:800px){
 
 
 
-    body{
+body{
 
-        padding:10px;
+padding:10px;
 
-    }
-
-
-
-    .topo{
-
-        flex-direction:column;
-
-        text-align:center;
-
-    }
+}
 
 
 
-    .grid{
-
-        grid-template-columns:
-
-        1fr;
-
-    }
+.topo{
 
 
+flex-direction:column;
 
-    button{
+text-align:center;
 
-        width:100%;
 
-    }
+}
+
+
+
+.grid{
+
+
+grid-template-columns:
+
+1fr;
+
+
+}
+
+
+
+.menu button{
+
+
+width:100%;
+
+
+}
+
 
 
 }
