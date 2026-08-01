@@ -1,100 +1,82 @@
-// ==========================================
-// SÃO JORGE GÁS
-// SCRIPT.JS DEFINITIVO
-// PARTE 1/3
-// ==========================================
+console.log("Sistema São Jorge Gás carregado!");
 
 
 // ===============================
-// BANCO LOCAL
+// BANCO DE DADOS LOCAL
 // ===============================
 
-
-let contagem =
-JSON.parse(
-localStorage.getItem("contagemGas")
-)
-|| [];
+let contagem = JSON.parse(
+    localStorage.getItem("contagemGas")
+) || [];
 
 
-let historico =
-JSON.parse(
-localStorage.getItem("historicoGas")
-)
-|| [];
-
+let historico = JSON.parse(
+    localStorage.getItem("historicoGas")
+) || [];
 
 
 
 
 // ===============================
-// UTILIDADES
+// FUNÇÕES AUXILIARES
 // ===============================
 
 
 function dinheiro(valor){
 
-return Number(valor)
-.toLocaleString(
-"pt-BR",
-{
-style:"currency",
-currency:"BRL"
-}
-);
+    return Number(valor).toLocaleString(
+        "pt-BR",
+        {
+            style:"currency",
+            currency:"BRL"
+        }
+    );
 
 }
-
 
 
 
 function numero(valor){
 
+    if(!valor) return 0;
 
-return Number(
-
-String(valor)
-
-.replace(".","")
-
-.replace(",", ".")
-
-);
-
+    return Number(
+        String(valor)
+        .replace(/\./g,"")
+        .replace(",",".")
+    );
 
 }
 
 
 
 
-
-
-
-
-
 // ===============================
-// TROCAR TELAS
+// TROCA DE TELAS
 // ===============================
 
 
 function mostrarTela(id){
 
-
-document.querySelectorAll(".tela")
-.forEach(tela=>{
+    let telas = document.querySelectorAll(".tela");
 
 
-tela.classList.add("escondido");
+    telas.forEach(tela=>{
+
+        tela.classList.add("escondido");
+
+    });
 
 
-});
+
+    let abrir = document.getElementById(id);
 
 
+    if(abrir){
 
-document.getElementById(id)
-.classList.remove("escondido");
+        abrir.classList.remove("escondido");
 
-
+    }
 
 }
 
@@ -103,155 +85,100 @@ document.getElementById(id)
 
 
 // ===============================
-// CALCULO NOTA
+// CALCULADORA NOTA FISCAL
 // ===============================
-
-
-
-let resultadoNota=null;
-
-
-
 
 
 function calcularNota(){
 
 
+    let tipo = document.getElementById(
+        "tipoGas"
+    ).value;
 
-let tipo =
 
-document.getElementById(
-"tipoGas"
-).value;
 
+    let valor = numero(
+        document.getElementById(
+            "valorNota"
+        ).value
+    );
 
 
 
-let valor =
+    let tabela = Number(
+        document.getElementById(
+            "tabelaP13"
+        ).value
+    );
 
-numero(
 
-document.getElementById(
-"valorNota"
-).value
 
-);
+    if(valor <= 0){
 
+        document.getElementById(
+            "resultadoNota"
+        ).innerHTML =
+        "Digite um valor válido.";
 
+        return;
 
+    }
 
 
-let tabela =
 
-Number(
 
-document.getElementById(
-"tabelaP13"
-).value
+    let resultado;
 
-);
 
 
+    if(tipo === "P13"){
 
 
+        resultado = calcularP13(
+            valor,
+            tabela
+        );
 
 
-if(!valor){
+    }
 
 
-alert(
-"Digite o valor da nota"
-);
 
+    if(tipo === "P20"){
 
-return;
 
+        resultado = calcularProdutoFixo(
+            valor,
+            130,
+            "P20"
+        );
 
-}
 
+    }
 
 
 
+    if(tipo === "P45"){
 
 
+        resultado = calcularProdutoFixo(
+            valor,
+            300,
+            "P45"
+        );
 
-if(tipo==="P13"){
 
+    }
 
 
-resultadoNota =
 
-calcularP13(
 
-valor,
-
-tabela
-
-);
-
-
-
-}
-
-
-
-
-
-if(tipo==="P20"){
-
-
-
-resultadoNota =
-
-calcularFixo(
-
-valor,
-
-130,
-
-"P20"
-
-);
-
-
-}
-
-
-
-
-
-
-
-if(tipo==="P45"){
-
-
-
-resultadoNota =
-
-calcularFixo(
-
-valor,
-
-300,
-
-"P45"
-
-);
-
-
-}
-
-
-
-
-
-mostrarResultadoNota();
+    mostrarResultadoNota(resultado);
 
 
 
 }
-
-
 
 
 
@@ -260,82 +187,49 @@ mostrarResultadoNota();
 
 
 // ===============================
-// P20 E P45
+// P20 / P45
 // ===============================
 
 
-function calcularFixo(
-
-valor,
-
-preco,
-
-tipo
-
+function calcularProdutoFixo(
+    valor,
+    preco,
+    tipo
 ){
 
 
+    let quantidade = Math.floor(
+        valor / preco
+    );
 
-let quantidade =
 
-Math.floor(
-
-valor/preco
-
-);
+    let total = quantidade * preco;
 
 
 
+    return {
 
+        tipo: tipo,
 
-return {
+        itens:[
 
+            {
+                quantidade:quantidade,
+                valor:preco
+            }
 
-tipo:tipo,
+        ],
 
+        total:total,
 
-lista:[{
+        sobra:
+        Number(
+            (valor-total).toFixed(2)
+        )
 
-
-qtd:quantidade,
-
-
-valor:preco
-
-
-}],
-
-
-
-total:
-
-quantidade*preco,
-
-
-
-sobra:
-
-Number(
-
-(
-
-valor -
-
-(quantidade*preco)
-
-)
-
-.toFixed(2)
-
-)
-
-
-};
-
+    };
 
 }
-
-
 
 
 
@@ -347,163 +241,106 @@ valor -
 // ===============================
 
 
+function calcularP13(valor, minimo){
 
-function calcularP13(
 
-valor,
+    for(
+        let quantidade=Math.floor(valor/minimo);
+        quantidade>=0;
+        quantidade--
+    ){
 
-minimo
 
-){
 
+        let restante =
+        Number(
+            (
+                valor -
+                (quantidade*minimo)
+            )
+            .toFixed(2)
+        );
 
 
 
 
-for(
+        let complemento =
+        procurarComplemento(
+            restante,
+            minimo
+        );
 
-let qtd=
 
-Math.floor(
 
-valor/minimo
 
-);
 
+        if(
+            complemento ||
+            restante===0
+        ){
 
-qtd>=0;
 
 
-qtd--
+            let itens=[];
 
-){
 
 
+            if(quantidade>0){
 
 
+                itens.push({
 
-let valorBase =
+                    quantidade:quantidade,
 
-qtd*minimo;
+                    valor:minimo
 
+                });
 
 
+            }
 
 
-let resto =
 
-Number(
 
-(
 
-valor -
+            if(complemento){
 
-valorBase
 
-)
+                itens.push(complemento);
 
-.toFixed(2)
 
-);
+            }
 
 
 
 
 
 
-let complemento =
+            return {
 
-acharComplemento(
+                tipo:"P13",
 
-resto,
+                itens:itens,
 
-minimo
+                total:valor,
 
-);
+                sobra:0
 
+            };
 
 
+        }
 
 
+    }
 
 
-if(complemento){
 
 
-
-let lista=[];
-
-
-
-
-
-if(qtd>0){
-
-
-lista.push({
-
-qtd:qtd,
-
-valor:minimo
-
-
-});
+    return null;
 
 
 }
-
-
-
-
-
-if(complemento){
-
-
-lista.push(complemento);
-
-
-}
-
-
-
-
-
-return {
-
-
-tipo:"P13",
-
-
-lista:lista,
-
-
-total:valor,
-
-
-sobra:0
-
-
-};
-
-
-
-}
-
-
-
-}
-
-
-
-
-
-
-
-return null;
-
-
-}
-
 
 
 
@@ -512,228 +349,167 @@ return null;
 
 
 // ===============================
-// PROCURA COMPLEMENTO
+// PROCURA VALOR COMPLEMENTO
 // ===============================
 
 
-
-function acharComplemento(
-
-valor,
-
-minimo
-
+function procurarComplemento(
+    valor,
+    minimo
 ){
 
 
+    if(valor <= 0){
 
-if(valor===0)
+        return null;
 
-return null;
-
-
-
-
-
-for(
-
-let qtd=1;
-
-qtd<=100;
-
-qtd++
-
-){
-
-
-
-let preco =
-
-Number(
-
-(
-
-valor/qtd
-
-)
-
-.toFixed(2)
-
-);
+    }
 
 
 
 
 
-
-if(
-
-preco>=minimo
-
-&&
-
-preco<=120
-
-){
+    for(
+        let quantidade=1;
+        quantidade<=200;
+        quantidade++
+    ){
 
 
 
-return {
+        let valorGas =
+        Number(
+            (
+                valor/quantidade
+            )
+            .toFixed(2)
+        );
 
 
-qtd:qtd,
 
 
-valor:preco
+
+        if(
+            valorGas >= minimo &&
+            valorGas <= 120
+        ){
 
 
-};
 
+            return {
+
+                quantidade:quantidade,
+
+                valor:valorGas
+
+            };
+
+
+        }
+
+
+    }
+
+
+
+
+    return null;
 
 
 }
-
-
-
-}
-
-
-
-return null;
-
-
-}
-
-
-
-
-
-
-
-
 
 // ===============================
 // MOSTRAR RESULTADO NOTA
 // ===============================
 
 
-function mostrarResultadoNota(){
+function mostrarResultadoNota(resultado){
+
+
+    let div = document.getElementById(
+        "resultadoNota"
+    );
 
 
 
-let div=
-
-document.getElementById(
-"resultadoNota"
-);
+    if(!resultado){
 
 
+        div.innerHTML = 
+        `
+        <h3>
+        Não foi encontrada uma combinação.
+        </h3>
+        `;
+
+
+        return;
+
+    }
 
 
 
-if(!resultadoNota){
+
+    let conta="";
 
 
 
-div.innerHTML=
 
-"Não foi encontrada combinação exata.";
+    resultado.itens.forEach(item=>{
 
-return;
+
+        conta += `
+
+        ${item.quantidade} x 
+        ${dinheiro(item.valor)}
+        =
+        ${dinheiro(
+            item.quantidade * item.valor
+        )}
+
+        <br>
+
+        `;
+
+
+    });
+
+
+
+
+
+    div.innerHTML = `
+
+
+    <h3>Conta:</h3>
+
+
+    ${conta}
+
+
+    <hr>
+
+
+    <h2>
+    Total:
+    ${dinheiro(resultado.total)}
+    </h2>
+
+
+
+    <h3>
+    Sobra:
+    ${dinheiro(resultado.sobra)}
+    </h3>
+
+
+    `;
+
 
 
 }
 
 
-
-
-
-
-let conta="";
-
-
-
-
-
-resultadoNota.lista
-.forEach(item=>{
-
-
-
-conta += `
-
-
-${item.qtd}
-
-x
-
-${dinheiro(item.valor)}
-
-=
-
-${dinheiro(
-
-item.qtd*
-
-item.valor
-
-)}
-
-
-<br>
-
-
-`;
-
-
-
-});
-
-
-
-
-
-
-
-div.innerHTML=`
-
-<h3>Conta:</h3>
-
-
-${conta}
-
-
-
-<hr>
-
-
-
-<b>
-Resultado:
-${dinheiro(resultadoNota.total)}
-</b>
-
-
-
-<br>
-
-
-<b>
-Sobra:
-${dinheiro(resultadoNota.sobra)}
-</b>
-
-
-`;
-
-
-
-}
-// ==========================================
-// SÃO JORGE GÁS
-// SCRIPT.JS DEFINITIVO
-// PARTE 2/3
-// ==========================================
 
 
 
@@ -741,212 +517,178 @@ ${dinheiro(resultadoNota.sobra)}
 
 
 // ===============================
-// RAMPA
+// CALCULADORA DE RAMPA
 // ===============================
 
 
 function calcularRampa(){
 
 
-let partes=[
 
+    let campos=[
 
-[
-"rAltura",
-"rFileira",
-"rColuna"
-],
 
+        [
+        "rAltura",
+        "rFileira",
+        "rColuna"
+        ],
 
-[
-"extraAltura1",
-"extraFileira1",
-"extraColuna1"
-],
 
 
-[
-"extraAltura2",
-"extraFileira2",
-"extraColuna2"
-]
+        [
+        "extraAltura1",
+        "extraFileira1",
+        "extraColuna1"
+        ],
 
 
-];
 
+        [
+        "extraAltura2",
+        "extraFileira2",
+        "extraColuna2"
+        ]
 
+    ];
 
-let total=0;
 
-let conta="";
 
 
 
+    let total=0;
 
+    let conta="";
 
-partes.forEach(p=>{
 
 
 
-let altura=
 
-Number(
+    campos.forEach(campo=>{
 
-document.getElementById(p[0])
-.value
 
-||0
+        let altura =
+        Number(
+            document.getElementById(campo[0]).value
+        ) || 0;
 
-);
 
 
+        let fileira =
+        Number(
+            document.getElementById(campo[1]).value
+        ) || 0;
 
-let fileira=
 
-Number(
 
-document.getElementById(p[1])
-.value
+        let coluna =
+        Number(
+            document.getElementById(campo[2]).value
+        ) || 0;
 
-||0
 
-);
 
 
 
-let coluna=
+        if(
+            altura &&
+            fileira &&
+            coluna
+        ){
 
-Number(
 
-document.getElementById(p[2])
-.value
+            let resultado =
+            altura *
+            fileira *
+            coluna;
 
-||0
 
-);
 
 
+            total += resultado;
 
 
 
 
+            conta += `
 
-if(
+            ${altura} x
+            ${fileira} x
+            ${coluna}
+            =
+            ${resultado}
 
-altura>0 &&
+            <br>
 
-fileira>0 &&
+            `;
 
-coluna>0
 
-){
 
+        }
 
 
-let resultado=
 
-altura*
+    });
 
-fileira*
 
-coluna;
 
 
 
 
 
-total+=resultado;
+    let resultado =
+    document.getElementById(
+        "resultadoRampa"
+    );
 
 
 
 
-conta += `
 
+    if(total===0){
 
-${altura}
 
-x
+        resultado.innerHTML =
+        "Digite os valores da rampa.";
 
-${fileira}
 
-x
+        return;
 
-${coluna}
+    }
 
-=
 
-${resultado}
 
-<br>
 
 
-`;
 
+    resultado.innerHTML = `
 
 
-}
+    <h3>
+    Conta:
+    </h3>
 
 
+    ${conta}
 
-});
 
 
+    <hr>
 
 
+    <h2>
+    Total:
+    ${total}
+    gases
+    </h2>
 
 
-if(total===0){
-
-
-
-document.getElementById(
-"resultadoRampa"
-).innerHTML=
-
-"Informe as medidas da rampa.";
-
-
-return;
-
-
-}
-
-
-
-
-
-
-document.getElementById(
-"resultadoRampa"
-).innerHTML=`
-
-<h3>Conta:</h3>
-
-
-${conta}
-
-
-<hr>
-
-
-<h2>
-
-Total:
-
-${total}
-
-gases
-
-</h2>
-
-
-`;
+    `;
 
 
 
 
 }
-
 
 
 
@@ -965,83 +707,76 @@ function adicionarContagem(){
 
 
 
-let produto =
-
-
-document.getElementById(
-"produtoContagem"
-).value;
+    let produto =
+    document.getElementById(
+        "produtoContagem"
+    ).value;
 
 
 
 
-let quantidade =
-
-
-Number(
-
-document.getElementById(
-"quantidadeContagem"
-).value
-
-);
+    let quantidade =
+    Number(
+        document.getElementById(
+            "quantidadeContagem"
+        ).value
+    );
 
 
 
 
 
-if(!quantidade){
+    if(!quantidade){
 
 
-
-alert(
-"Digite uma quantidade"
-);
-
-
-return;
+        alert(
+            "Informe a quantidade"
+        );
 
 
-}
+        return;
 
 
-
-
-
-
-
-contagem.push({
-
-produto,
-
-quantidade,
-
-data:
-
-new Date()
-.toLocaleString(
-"pt-BR"
-)
-
-});
+    }
 
 
 
 
 
-salvarContagem();
+    contagem.push({
+
+
+        produto:produto,
+
+
+        quantidade:quantidade,
+
+
+        data:
+        new Date()
+        .toLocaleString(
+            "pt-BR"
+        )
+
+
+    });
 
 
 
-mostrarContagem();
 
 
+    salvarContagem();
 
-atualizarResumo();
+
+    mostrarContagem();
+
+
+    atualizarResumo();
 
 
 
 }
+
 
 
 
@@ -1050,14 +785,13 @@ atualizarResumo();
 function salvarContagem(){
 
 
+    localStorage.setItem(
 
-localStorage.setItem(
+        "contagemGas",
 
-"contagemGas",
+        JSON.stringify(contagem)
 
-JSON.stringify(contagem)
-
-);
+    );
 
 
 }
@@ -1068,98 +802,78 @@ JSON.stringify(contagem)
 
 
 
-
-
-// ===============================
-// MOSTRAR CONTAGEM
-// ===============================
 
 
 function mostrarContagem(){
 
 
 
-let tabela =
-
-document.getElementById(
-"tabelaContagem"
-);
-
+    let tabela =
+    document.getElementById(
+        "tabelaContagem"
+    );
 
 
 
-if(!tabela)
 
-return;
+    if(!tabela) return;
 
 
 
 
 
-
-tabela.innerHTML="";
-
+    tabela.innerHTML="";
 
 
 
 
-contagem.forEach(
-
-(item,index)=>{
 
 
-
-tabela.innerHTML += `
-
-
-<tr>
+    contagem.forEach(
+        (item,index)=>{
 
 
-<td>
-
-${item.produto}
-
-</td>
+        tabela.innerHTML += `
 
 
-<td>
+        <tr>
 
-${item.quantidade}
 
-</td>
+        <td>
+        ${item.produto}
+        </td>
+
+
+        <td>
+        ${item.quantidade}
+        </td>
 
 
 
-<td>
+        <td>
+
+        <button onclick="
+        removerContagem(${index})
+        ">
+
+        X
+
+        </button>
+
+        </td>
 
 
-<button onclick="removerContagem(${index})">
-
-X
-
-</button>
+        </tr>
 
 
-</td>
+        `;
 
 
-</tr>
-
-
-`;
+    });
 
 
 
 }
-
-);
-
-
-
-}
-
-
-
 
 
 
@@ -1170,30 +884,23 @@ function removerContagem(index){
 
 
 
-contagem.splice(
-
-index,
-
-1
-
-);
+    contagem.splice(
+        index,
+        1
+    );
 
 
-
-salvarContagem();
-
+    salvarContagem();
 
 
-mostrarContagem();
+    mostrarContagem();
 
 
-
-atualizarResumo();
+    atualizarResumo();
 
 
 
 }
-
 
 
 
@@ -1207,177 +914,138 @@ atualizarResumo();
 // ===============================
 
 
+
 function atualizarResumo(){
 
 
 
-let resumo={
+    let resumo={
 
 
+        "P13 Cheio":0,
 
-"P13 Cheio":0,
+        "P13 Vazio":0,
 
+        "P20 Cheio":0,
 
-"P13 Vazio":0,
+        "P20 Vazio":0,
 
+        "P45 Cheio":0,
 
-"P20 Cheio":0,
+        "P45 Vazio":0
 
 
-"P20 Vazio":0,
+    };
 
 
-"P45 Cheio":0,
 
 
-"P45 Vazio":0
 
 
 
-};
+    contagem.forEach(item=>{
 
 
+        if(resumo[item.produto] !== undefined){
 
 
+            resumo[item.produto]
+            +=
+            item.quantidade;
 
 
+        }
 
-contagem.forEach(item=>{
 
+    });
 
 
-if(
 
-resumo[item.produto]
 
-!==undefined
 
-){
 
+    let html="";
 
-resumo[item.produto]
+    let total=0;
 
-+=
 
-item.quantidade;
 
 
-}
 
+    Object.keys(resumo)
+    .forEach(nome=>{
 
 
-});
+        total += resumo[nome];
 
 
 
+        html += `
 
+        <p>
 
+        <b>${nome}</b>:
+        ${resumo[nome]}
 
+        </p>
 
-let html="";
+        `;
 
-let total=0;
 
+    });
 
 
 
 
 
-Object.keys(resumo)
 
-.forEach(nome=>{
+    html += `
 
 
+    <hr>
 
-total += resumo[nome];
 
+    <h2>
 
+    Total Geral:
+    ${total}
 
+    </h2>
 
-html+=`
 
+    `;
 
-<p>
 
-<b>${nome}</b>
 
-:
 
-${resumo[nome]}
 
 
-</p>
 
+    let div =
+    document.getElementById(
+        "resumo"
+    );
 
-`;
 
 
+    if(div){
 
+        div.innerHTML=html;
 
-});
+    }
 
 
 
 
+    atualizarDashboard(resumo);
 
 
-html += `
 
-
-<hr>
-
-
-<h2>
-
-Total Geral:
-
-${total}
-
-</h2>
-
-
-`;
-
-
-
-
-
-
-
-let div=
-
-document.getElementById(
-"resumo"
-);
-
-
-
-
-
-if(div)
-
-div.innerHTML=html;
-
-
-
-
-
-atualizarDashboard(resumo);
-
-
-
-return resumo;
+    return resumo;
 
 
 
 }
-
-
-
-
-
-
-
 
 // ===============================
 // DASHBOARD
@@ -1387,97 +1055,81 @@ return resumo;
 function atualizarDashboard(resumo){
 
 
-
-let campos={
-
-
-"P13 Cheio":
-"dashP13Cheio",
+    let campos={
 
 
-"P13 Vazio":
-"dashP13Vazio",
+        "P13 Cheio":"dashP13Cheio",
+
+        "P13 Vazio":"dashP13Vazio",
+
+        "P20 Cheio":"dashP20Cheio",
+
+        "P20 Vazio":"dashP20Vazio",
+
+        "P45 Cheio":"dashP45Cheio",
+
+        "P45 Vazio":"dashP45Vazio"
 
 
-"P20 Cheio":
-"dashP20Cheio",
-
-
-"P20 Vazio":
-"dashP20Vazio",
-
-
-"P45 Cheio":
-"dashP45Cheio",
-
-
-"P45 Vazio":
-"dashP45Vazio"
-
-
-};
+    };
 
 
 
 
 
-Object.keys(campos)
+    Object.keys(campos)
+    .forEach(nome=>{
 
-.forEach(nome=>{
 
-
-let campo=
-
-document.getElementById(
-campos[nome]
-);
+        let elemento =
+        document.getElementById(
+            campos[nome]
+        );
 
 
 
-if(campo)
-
-campo.innerHTML=
-
-resumo[nome];
+        if(elemento){
 
 
-});
+            elemento.innerHTML =
+            resumo[nome];
 
 
+        }
 
 
-
-let total=
-
-Object.values(resumo)
-
-.reduce(
-
-(a,b)=>a+b,
-
-0
-
-);
+    });
 
 
 
 
 
-
-let totalTela=
-
-document.getElementById(
-"dashTotal"
-);
-
-
+    let total =
+    Object.values(resumo)
+    .reduce(
+        (a,b)=>a+b,
+        0
+    );
 
 
 
-if(totalTela)
 
-totalTela.innerHTML=total;
 
+    let totalElemento =
+    document.getElementById(
+        "dashTotal"
+    );
+
+
+
+    if(totalElemento){
+
+
+        totalElemento.innerHTML =
+        total;
+
+
+    }
 
 
 }
@@ -1495,59 +1147,56 @@ totalTela.innerHTML=total;
 // ===============================
 
 
+
 function salvarHistorico(){
 
 
 
-let resumo=
-
-atualizarResumo();
-
+    let resumo =
+    atualizarResumo();
 
 
 
 
 
-historico.push({
+    historico.push({
 
 
-data:
+        data:
 
-new Date()
-
-.toLocaleString(
-"pt-BR"
-),
-
-
-resumo:resumo
+        new Date()
+        .toLocaleString(
+            "pt-BR"
+        ),
 
 
+        resumo:resumo
 
-});
+
+    });
 
 
 
 
 
 
-localStorage.setItem(
 
-"historicoGas",
+    localStorage.setItem(
 
-JSON.stringify(historico)
+        "historicoGas",
 
-);
+        JSON.stringify(historico)
 
-
-
+    );
 
 
-mostrarHistorico();
 
+
+    mostrarHistorico();
 
 
 }
+
 
 
 
@@ -1559,73 +1208,66 @@ function mostrarHistorico(){
 
 
 
-let div=
-
-document.getElementById(
-"listaHistorico"
-);
-
-
-
-
-
-if(!div)
-
-return;
+    let div =
+    document.getElementById(
+        "listaHistorico"
+    );
 
 
 
 
 
-div.innerHTML="";
+    if(!div) return;
 
 
 
 
 
-historico.forEach(item=>{
+    div.innerHTML="";
 
 
 
-div.innerHTML += `
-
-
-<p>
-
-
-<b>
-
-${item.data}
-
-</b>
-
-
-<br>
-
-
-${JSON.stringify(item.resumo)}
-
-
-</p>
-
-
-<hr>
-
-
-`;
 
 
 
-});
+    historico.forEach(item=>{
+
+
+        div.innerHTML += `
+
+
+        <div class="resultado">
+
+
+        <b>
+        ${item.data}
+        </b>
+
+
+        <br><br>
+
+
+        ${JSON.stringify(
+            item.resumo
+        )}
+
+
+
+        </div>
+
+
+
+        `;
+
+
+    });
 
 
 
 }
-// ==========================================
-// SÃO JORGE GÁS
-// SCRIPT.JS DEFINITIVO
-// PARTE 3/3
-// ==========================================
+
+
+
 
 
 
@@ -1633,87 +1275,83 @@ ${JSON.stringify(item.resumo)}
 
 
 // ===============================
-// GERAR PDF
+// PDF
 // ===============================
+
 
 
 function gerarPDF(){
 
 
 
-const {jsPDF}=window.jspdf;
+    const {jsPDF}=window.jspdf;
 
 
 
-let pdf=new jsPDF();
-
-
-
-
-
-let resumo=
-
-atualizarResumo();
+    let pdf =
+    new jsPDF();
 
 
 
 
 
-
-pdf.text(
-
-"São Jorge Gás - Fechamento",
-
-10,
-
-20
-
-);
-
-
-
-
-let y=35;
-
-
-
-
-Object.keys(resumo)
-
-.forEach(nome=>{
-
-
-pdf.text(
-
-`${nome}: ${resumo[nome]}`,
-
-10,
-
-y
-
-);
-
-
-y+=10;
-
-
-
-});
+    let resumo =
+    atualizarResumo();
 
 
 
 
 
-pdf.save(
 
-"fechamento-sao-jorge-gas.pdf"
+    pdf.text(
+        "São Jorge Gás - Fechamento",
+        10,
+        20
+    );
 
-);
+
+
+
+
+    let y=40;
+
+
+
+
+
+    Object.keys(resumo)
+    .forEach(nome=>{
+
+
+        pdf.text(
+
+        nome+
+        ": "+
+        resumo[nome],
+
+        10,
+
+        y
+
+        );
+
+
+        y+=10;
+
+
+    });
+
+
+
+
+
+    pdf.save(
+        "fechamento-gas.pdf"
+    );
 
 
 
 }
-
 
 
 
@@ -1727,189 +1365,74 @@ pdf.save(
 // ===============================
 
 
+
 function exportarBackup(){
 
 
 
-let dados={
+    let dados={
 
 
-contagem:contagem,
+        contagem:contagem,
 
 
-historico:historico
+        historico:historico
 
 
-
-};
-
-
-
-
-
-let arquivo=
-
-new Blob(
-
-[
-
-JSON.stringify(
-
-dados,
-
-null,
-
-2
-
-)
-
-],
-
-{
-
-type:"application/json"
-
-}
-
-);
+    };
 
 
 
 
 
-let link=
 
-document.createElement(
-"a"
-);
+    let arquivo =
+    new Blob(
 
+        [
+        JSON.stringify(
+            dados,
+            null,
+            2
+        )
+        ],
 
+        {
+        type:
+        "application/json"
+        }
 
-link.href=
-
-URL.createObjectURL(
-arquivo
-);
-
-
-
-link.download=
-
-"backup-sao-jorge-gas.json";
-
+    );
 
 
-link.click();
+
+
+
+
+    let link =
+    document.createElement(
+        "a"
+    );
+
+
+
+    link.href =
+    URL.createObjectURL(
+        arquivo
+    );
+
+
+
+    link.download =
+    "backup-sao-jorge.json";
+
+
+
+    link.click();
 
 
 
 }
-
-
-
-
-
-
-
-
-
-function importarBackup(event){
-
-
-
-let arquivo=
-
-event.target.files[0];
-
-
-
-
-let leitor=
-
-new FileReader();
-
-
-
-
-
-
-leitor.onload=function(e){
-
-
-
-let dados=
-
-JSON.parse(
-e.target.result
-);
-
-
-
-
-
-contagem=
-
-dados.contagem || [];
-
-
-
-historico=
-
-dados.historico || [];
-
-
-
-
-
-salvarContagem();
-
-
-
-localStorage.setItem(
-
-"historicoGas",
-
-JSON.stringify(historico)
-
-);
-
-
-
-
-
-mostrarContagem();
-
-
-
-atualizarResumo();
-
-
-
-mostrarHistorico();
-
-
-
-
-alert(
-
-"Backup restaurado com sucesso!"
-
-);
-
-
-
-}
-
-
-
-
-
-leitor.readAsText(arquivo);
-
-
-
-}
-
 
 
 
@@ -1928,36 +1451,34 @@ function perguntarIA(){
 
 
 
-let pergunta =
-
-document.getElementById(
-"perguntaIA"
-).value;
-
+    let campo =
+    document.getElementById(
+        "perguntaIA"
+    );
 
 
 
-
-if(!pergunta)
-
-return;
+    let pergunta =
+    campo.value.trim();
 
 
 
 
 
-
-let texto=
-
-pergunta.toLowerCase();
+    if(!pergunta)
+    return;
 
 
 
 
 
+    let texto =
+    pergunta.toLowerCase();
 
-let resposta="";
 
+
+
+    let resposta="";
 
 
 
@@ -1965,318 +1486,187 @@ let resposta="";
 
 
 
-
-if(
-
-texto.includes("oi")
-
-||
-
-texto.includes("olá")
-
-||
-
-texto.includes("ola")
-
-){
+    if(
+    texto.includes("rampa")
+    ){
 
 
+        resposta=`
 
-resposta=
+        Para calcular a rampa:
 
-`
-Olá! 👋
+        1º Informe altura.
 
-Sou o Assistente São Jorge.
+        2º Informe fileira.
 
-Posso ajudar você com:
+        3º Informe coluna.
 
-• cálculo de nota fiscal;
-• rampa;
-• contagem;
-• fechamento;
-• explicações passo a passo.
+        O sistema faz:
 
-Pode perguntar o que precisar.
-`;
+        Altura × Fileira × Coluna.
 
+        Depois soma as partes extras.
+
+        `;
+
+
+    }
+
+
+
+
+
+
+    else if(
+    texto.includes("nota")
+    ||
+    texto.includes("calculo")
+    ){
+
+
+        resposta=`
+
+        Para calcular uma nota:
+
+        1º Escolha P13, P20 ou P45.
+
+        2º Se for P13 escolha
+        a tabela 76, 78, 80 ou 82.
+
+        3º Informe o valor.
+
+        Eu procuro a melhor combinação
+        respeitando os limites.
+
+        Depois mostro a conta passo a passo.
+
+        `;
+
+
+    }
+
+
+
+
+
+
+    else if(
+    texto.includes("contagem")
+    ||
+    texto.includes("fechamento")
+    ){
+
+
+        resposta=`
+
+        A contagem deve ser separada:
+
+        P13 Cheio e Vazio.
+
+        P20 Cheio e Vazio.
+
+        P45 Cheio e Vazio.
+
+        Assim o fechamento fica correto.
+
+        `;
+
+
+    }
+
+
+
+
+
+
+    else if(
+    texto.includes("telefone")
+    ||
+    texto.includes("contato")
+    ){
+
+
+        resposta=`
+
+        O contato cadastrado da São Jorge Gás:
+
+        📞 (31) 3817-2759
+
+        `;
+
+
+    }
+
+
+
+
+
+
+
+    else{
+
+
+        resposta=`
+
+        Posso ajudar com:
+
+        • cálculo de notas;
+        • tabela fiscal;
+        • rampa;
+        • contagem;
+        • fechamento;
+        • explicações passo a passo.
+
+        Me explique sua dúvida que eu ajudo.
+
+        `;
+
+
+    }
+
+
+
+
+
+
+    document.getElementById(
+        "chatIA"
+    ).innerHTML += `
+
+
+
+    <p>
+
+    <b>Você:</b>
+    ${pergunta}
+
+    </p>
+
+
+
+    <p>
+
+    <b>São Jorge:</b>
+    ${resposta}
+
+    </p>
+
+
+
+    <hr>
+
+
+    `;
+
+
+
+
+
+
+    campo.value="";
 
 
 }
-
-
-
-
-
-
-
-else if(
-
-texto.includes("rampa")
-
-){
-
-
-
-resposta=
-
-`
-Vamos fazer a rampa passo a passo:
-
-1º - Informe a altura.
-
-2º - Informe a quantidade de fileiras.
-
-3º - Informe a quantidade de colunas.
-
-O cálculo será:
-
-Altura × Fileira × Coluna
-
-Exemplo:
-
-4 × 10 × 16
-
-Resultado:
-
-640 posições.
-`;
-
-
-
-}
-
-
-
-
-
-
-
-
-else if(
-
-texto.includes("nota")
-
-||
-
-texto.includes("calculo")
-
-){
-
-
-
-resposta=
-
-`
-Para calcular uma nota:
-
-1º - Escolha o tipo:
-
-P13, P20 ou P45.
-
-2º - Se for P13 escolha a tabela:
-
-76, 78, 80 ou 82.
-
-3º - Informe o valor.
-
-O sistema procura uma combinação respeitando:
-
-✔ valor mínimo da tabela;
-
-✔ máximo de R$120 por P13;
-
-✔ menor sobra possível.
-
-Depois ele mostra a conta completa.
-`;
-
-
-
-}
-
-
-
-
-
-
-
-else if(
-
-texto.includes("tabela")
-
-){
-
-
-
-resposta=
-
-`
-As tabelas disponíveis para P13 são:
-
-Tabela 76
-Tabela 78
-Tabela 80
-Tabela 82
-
-A tabela escolhida define o valor mínimo usado no cálculo.
-`;
-
-
-
-}
-
-
-
-
-
-
-
-
-else if(
-
-texto.includes("telefone")
-
-||
-
-texto.includes("contato")
-
-){
-
-
-
-resposta=
-
-`
-O contato cadastrado da São Jorge Gás de Ponte Nova é:
-
-📞 (31) 3817-2759
-
-Caso seja necessário confirmar informações comerciais, entre em contato diretamente.
-`;
-
-
-
-}
-
-
-
-
-
-
-
-else if(
-
-texto.includes("fechamento")
-
-||
-
-texto.includes("contagem")
-
-){
-
-
-
-resposta=
-
-`
-O fechamento deve ser conferido separado:
-
-P13 Cheio
-P13 Vazio
-
-P20 Cheio
-P20 Vazio
-
-P45 Cheio
-P45 Vazio
-
-Assim evita misturar recipientes.
-`;
-
-
-
-}
-
-
-
-
-
-
-else{
-
-
-
-resposta=
-
-`
-Entendi sua pergunta.
-
-Eu posso ajudar explicando:
-
-- como fazer cálculos;
-- como conferir uma nota;
-- como usar a rampa;
-- como fazer a contagem;
-- como organizar o fechamento.
-
-Tente explicar com mais detalhes que eu te ajudo.
-`;
-
-
-
-}
-
-
-
-
-
-
-
-
-document.getElementById(
-"chatIA"
-).innerHTML += `
-
-
-<p>
-
-<b>Você:</b>
-
-${pergunta}
-
-</p>
-
-
-
-<p>
-
-<b>São Jorge:</b>
-
-${resposta}
-
-</p>
-
-
-
-<hr>
-
-
-`;
-
-
-
-
-
-
-document.getElementById(
-"perguntaIA"
-).value="";
-
-
-
-}
-
 
 
 
@@ -2294,23 +1684,18 @@ document.getElementById(
 window.onload=function(){
 
 
-
-mostrarContagem();
-
+    mostrarContagem();
 
 
-atualizarResumo();
+    atualizarResumo();
 
 
-
-mostrarHistorico();
-
+    mostrarHistorico();
 
 
-mostrarTela(
-"dashboard"
-);
-
+    mostrarTela(
+        "dashboard"
+    );
 
 
 }
