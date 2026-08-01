@@ -7,7 +7,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>São Jorge Gás - Sistema</title>
+<title>São Jorge Gás</title>
 
 <link rel="stylesheet" href="style.css">
 
@@ -20,9 +20,9 @@
 <header class="topo">
 
 
-<div class="logo-area">
+<div class="logo">
 
-<img src="logo.png" alt="São Jorge Gás" onerror="this.style.display='none'">
+<img src="logo.png" alt="São Jorge Gás">
 
 </div>
 
@@ -42,90 +42,161 @@
 
 
 
+<nav class="menu">
+
+
+<button onclick="mostrarTela('dashboard')">
+🏠 Dashboard
+</button>
+
+
+<button onclick="mostrarTela('nota')">
+📄 Nota Fiscal
+</button>
+
+
+<button onclick="mostrarTela('rampa')">
+🚛 Rampa
+</button>
+
+
+<button onclick="mostrarTela('contagem')">
+📦 Contagem
+</button>
+
+
+<button onclick="mostrarTela('historico')">
+📜 Histórico
+</button>
+
+
+<button onclick="mostrarTela('ia')">
+🤖 Assistente
+</button>
+
+
+</nav>
+
+
+
+
+
+
+
 <main>
 
 
 
 
 
-<!-- =========================
-NOTA FISCAL
-========================= -->
-
-<section class="card">
+<!-- =====================
+DASHBOARD
+===================== -->
 
 
-<h2>📄 Calculadora Nota Fiscal</h2>
+<section id="dashboard" class="tela">
 
 
-<label>Tipo de Gás</label>
-
-
-<select id="tipoGasNota">
-
-<option value="P13">
-P13
-</option>
-
-<option value="P20">
-P20
-</option>
-
-<option value="P45">
-P45
-</option>
-
-</select>
+<h2>
+Dashboard
+</h2>
 
 
 
-<label>Tabela P13</label>
+<div class="cards">
 
 
-<select id="tabelaNota">
+<div class="card">
 
-<option value="76">
-Tabela 76
-</option>
+<h3>P13 Cheio</h3>
 
-<option value="78">
-Tabela 78
-</option>
+<span id="dashP13Cheio">
+0
+</span>
 
-<option value="80">
-Tabela 80
-</option>
-
-</select>
+</div>
 
 
 
+<div class="card">
 
-<label>Valor da Nota</label>
+<h3>P13 Vazio</h3>
 
+<span id="dashP13Vazio">
+0
+</span>
 
-<input id="valorNota" placeholder="Digite o valor">
-
-
-<div class="botoes">
-
-
-<button onclick="calcularNota()">
-Calcular
-</button>
+</div>
 
 
 
-<button onclick="adicionarNotaFechamento()">
-Adicionar Fechamento
-</button>
+<div class="card">
+
+<h3>P20 Cheio</h3>
+
+<span id="dashP20Cheio">
+0
+</span>
+
+</div>
+
+
+
+<div class="card">
+
+<h3>P20 Vazio</h3>
+
+<span id="dashP20Vazio">
+0
+</span>
+
+</div>
+
+
+
+<div class="card">
+
+<h3>P45 Cheio</h3>
+
+<span id="dashP45Cheio">
+0
+</span>
+
+</div>
+
+
+
+<div class="card">
+
+<h3>P45 Vazio</h3>
+
+<span id="dashP45Vazio">
+0
+</span>
+
+</div>
+
 
 
 </div>
 
 
 
-<div id="resultadoNota" class="resultado"></div>
+
+
+<div class="resultado">
+
+
+<h3>Total Geral</h3>
+
+
+<h1 id="dashTotal">
+0
+</h1>
+
+
+</div>
+
 
 
 </section>
@@ -138,15 +209,124 @@ Adicionar Fechamento
 
 
 
-<!-- =========================
+<!-- =====================
+NOTA FISCAL
+===================== -->
+
+
+<section id="nota" class="tela escondido">
+
+
+<h2>
+Calculadora Nota Fiscal
+</h2>
+
+
+
+<label>
+Tipo de Gás
+</label>
+
+
+<select id="tipoGas">
+
+
+<option value="P13">
+P13
+</option>
+
+
+<option value="P20">
+P20
+</option>
+
+
+<option value="P45">
+P45
+</option>
+
+
+</select>
+
+
+
+
+
+<label>
+Tabela P13
+</label>
+
+
+<select id="tabelaP13">
+
+
+<option value="76">
+76
+</option>
+
+
+<option value="78">
+78
+</option>
+
+
+<option value="80">
+80
+</option>
+
+
+<option value="82">
+82
+</option>
+
+
+</select>
+
+
+
+
+
+
+<label>
+Valor da Nota
+</label>
+
+
+<input id="valorNota"
+placeholder="Digite o valor">
+
+
+
+
+
+<button onclick="calcularNota()">
+
+Calcular
+
+</button>
+
+
+
+<div id="resultadoNota"
+class="resultado">
+
+</div>
+
+
+
+</section>
+<!-- =====================
 RAMPA
-========================= -->
+===================== -->
 
 
-<section class="card">
+<section id="rampa" class="tela escondido">
 
 
-<h2>🚛 Calculadora Rampa</h2>
+<h2>
+🚛 Calculadora de Rampa
+</h2>
+
 
 
 <p>
@@ -157,20 +337,20 @@ Altura × Fileira × Coluna
 
 
 
-<h3>Principal</h3>
-
-
 
 <div class="grid">
 
 
-<input id="rAltura" placeholder="Altura">
+<input id="rAltura"
+placeholder="Altura">
 
 
-<input id="rFileira" placeholder="Fileira">
+<input id="rFileira"
+placeholder="Fileira">
 
 
-<input id="rColuna" placeholder="Coluna">
+<input id="rColuna"
+placeholder="Coluna">
 
 
 </div>
@@ -179,21 +359,24 @@ Altura × Fileira × Coluna
 
 
 
-
-<h3>Parte Extra 1</h3>
-
+<h3>
+Parte Extra 1
+</h3>
 
 
 <div class="grid">
 
 
-<input id="extraAltura1" placeholder="Altura">
+<input id="extraAltura1"
+placeholder="Altura">
 
 
-<input id="extraFileira1" placeholder="Fileira">
+<input id="extraFileira1"
+placeholder="Fileira">
 
 
-<input id="extraColuna1" placeholder="Coluna">
+<input id="extraColuna1"
+placeholder="Coluna">
 
 
 </div>
@@ -202,22 +385,24 @@ Altura × Fileira × Coluna
 
 
 
-
-
-<h3>Parte Extra 2</h3>
-
+<h3>
+Parte Extra 2
+</h3>
 
 
 <div class="grid">
 
 
-<input id="extraAltura2" placeholder="Altura">
+<input id="extraAltura2"
+placeholder="Altura">
 
 
-<input id="extraFileira2" placeholder="Fileira">
+<input id="extraFileira2"
+placeholder="Fileira">
 
 
-<input id="extraColuna2" placeholder="Coluna">
+<input id="extraColuna2"
+placeholder="Coluna">
 
 
 </div>
@@ -234,7 +419,10 @@ Calcular Rampa
 
 
 
-<div id="resultadoRampa" class="resultado"></div>
+<div id="resultadoRampa"
+class="resultado">
+
+</div>
 
 
 
@@ -248,20 +436,26 @@ Calcular Rampa
 
 
 
-<!-- =========================
+<!-- =====================
 CONTAGEM MANUAL
-========================= -->
+===================== -->
 
 
-<section class="card">
+<section id="contagem" class="tela escondido">
 
 
-<h2>📦 Contagem Manual</h2>
+<h2>
+📦 Contagem Manual
+</h2>
 
 
 
+<label>
+Produto
+</label>
 
-<select id="produtoFechamento">
+
+<select id="produtoContagem">
 
 
 <option>
@@ -301,7 +495,7 @@ P45 Vazio
 
 
 <input 
-id="quantidadeFechamento"
+id="quantidadeContagem"
 type="number"
 placeholder="Quantidade">
 
@@ -309,11 +503,12 @@ placeholder="Quantidade">
 
 
 
-<button onclick="adicionarManual()">
+<button onclick="adicionarContagem()">
 
 Adicionar
 
 </button>
+
 
 
 
@@ -350,14 +545,36 @@ Ação
 
 
 
-<tbody id="tabelaFechamento">
-
+<tbody id="tabelaContagem">
 
 </tbody>
 
 
 
 </table>
+
+
+
+
+
+
+
+<div class="resultado">
+
+
+<h2>
+Resumo
+</h2>
+
+
+<div id="resumo">
+
+</div>
+
+
+</div>
+
+
 
 
 
@@ -370,29 +587,28 @@ Ação
 
 
 
-<!-- =========================
-RESUMO
-========================= -->
+
+<!-- =====================
+HISTÓRICO
+===================== -->
 
 
-<section class="card">
+<section id="historico"
+class="tela escondido">
 
 
-<h2>📊 Resumo</h2>
-
-
-
-<div id="resumoFechamento" class="resultado">
-
-</div>
+<h2>
+📜 Histórico
+</h2>
 
 
 
 <button onclick="salvarHistorico()">
 
-Salvar Histórico
+Salvar Fechamento
 
 </button>
+
 
 
 
@@ -404,56 +620,33 @@ Gerar PDF
 
 
 
-</section>
 
 
-
-
-
-
-
-
-
-<!-- =========================
-HISTÓRICO
-========================= -->
-
-
-<section class="card">
-
-
-<h2>📜 Histórico</h2>
-
-
-<div id="historico" class="resultado">
+<div id="listaHistorico"
+class="resultado">
 
 </div>
 
 
 
 </section>
+<!-- =====================
+ASSISTENTE SÃO JORGE
+===================== -->
+
+
+<section id="ia"
+class="tela escondido">
+
+
+<h2>
+🤖 Assistente São Jorge
+</h2>
 
 
 
-
-
-
-
-
-
-<!-- =========================
-ASSISTENTE
-========================= -->
-
-
-<section class="card">
-
-
-<h2>🤖 Assistente São Jorge</h2>
-
-
-
-<div id="chatIA" class="chat">
+<div id="chatIA"
+class="chat">
 
 
 <p>
@@ -462,7 +655,7 @@ Olá! Sou o assistente do sistema São Jorge Gás.
 
 
 <p>
-Posso ajudar com nota fiscal, rampa, contagem e fechamento.
+Posso ajudar com cálculos, rampa, contagem e dúvidas do sistema.
 </p>
 
 
@@ -474,7 +667,7 @@ Posso ajudar com nota fiscal, rampa, contagem e fechamento.
 
 <input 
 id="perguntaIA"
-placeholder="Digite sua pergunta">
+placeholder="Digite sua pergunta aqui">
 
 
 
@@ -496,7 +689,28 @@ Enviar
 
 
 
+
+
 </main>
+
+
+
+
+
+
+
+<footer>
+
+
+<p>
+
+São Jorge Gás - Sistema de Controle
+
+</p>
+
+
+</footer>
+
 
 
 
@@ -510,6 +724,5 @@ Enviar
 
 
 </body>
-
 
 </html>
