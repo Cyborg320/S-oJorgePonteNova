@@ -187,6 +187,39 @@ function calcularNota(){
 
 
 // ===============================
+// TABELAS FISCAIS
+// ===============================
+
+function adicionarTabelasFiscais(){
+
+    const campo = document.getElementById("tabelaP13");
+
+    if(!campo) return;
+
+    const valores = [76, 78, 80, 82, 87, 95];
+
+    valores.forEach(valor => {
+
+        const existe = Array.from(campo.options)
+            .some(opcao => Number(opcao.value) === valor);
+
+        if(!existe){
+
+            const opcao = document.createElement("option");
+
+            opcao.value = valor;
+            opcao.textContent = valor;
+
+            campo.appendChild(opcao);
+
+        }
+
+    });
+
+}
+
+
+// ===============================
 // P20 / P45
 // ===============================
 
@@ -1531,7 +1564,7 @@ function perguntarIA(){
         1º Escolha P13, P20 ou P45.
 
         2º Se for P13 escolha
-        a tabela 76, 78, 80 ou 82.
+        a tabela 76, 78, 80, 82, 87 ou 95.
 
         3º Informe o valor.
 
@@ -1683,6 +1716,7 @@ function perguntarIA(){
 
 window.onload=function(){
 
+    adicionarTabelasFiscais();
 
     mostrarContagem();
 
@@ -1696,6 +1730,9 @@ window.onload=function(){
     mostrarTela(
         "dashboard"
     );
+
+
+}
 
 
 }
