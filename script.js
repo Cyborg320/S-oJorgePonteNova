@@ -1,1738 +1,240 @@
-console.log("Sistema São Jorge Gás carregado!");
+console.log("Sistema São Jorge Gás — Regras Operacionais Integradas!");
 
-
-// ===============================
-// BANCO DE DADOS LOCAL
-// ===============================
-
-let contagem = JSON.parse(
-    localStorage.getItem("contagemGas")
-) || [];
-
-
-let historico = JSON.parse(
-    localStorage.getItem("historicoGas")
-) || [];
-
-
-
-
-// ===============================
-// FUNÇÕES AUXILIARES
-// ===============================
-
-
-function dinheiro(valor){
-
-    return Number(valor).toLocaleString(
-        "pt-BR",
+// ==========================================
+// BANCO DE DADOS UNIFICADO (localStorage)
+// ==========================================
+let db = JSON.parse(localStorage.getItem("sj_gas_persistente")) || {
+    valores_fiscais: [
+        { id: 1, produto: 'P13', valor: 76.00, ativo: true },
+        { id: 2, produto: 'P13', valor: 78.00, ativo: true },
+        { id: 3, produto: 'P13', valor: 80.00, ativo: true },
+        { id: 4, produto: 'P13', valor: 82.00, ativo: true },
+        { id: 5, produto: 'P20', valor: 130.00, ativo: true },
+        { id: 6, produto: 'P45', valor: 300.00, ativo: true }
+    ],
+    rampas: [
         {
-            style:"currency",
-            currency:"BRL"
+            id: 101,
+            nome: "RAMPA 01",
+            observacoes: "",
+            itens: [
+                { id: 1001, produto: 'P13', situacao: 'CHEIO', fileiras: 4, qtd_fileira: 10 },
+                { id: 1002, produto: 'P13', situacao: 'VAZIO', fileiras: 2, qtd_fileira: 10 }
+            ]
         }
-    );
+    ],
+    historico: []
+};
 
+function salvarInstanciaBD() {
+    localStorage.setItem("sj_gas_persistente", JSON.stringify(db));
+    atualizarDashboardDados();
 }
 
-
-
-function numero(valor){
-
-    if(!valor) return 0;
-
-    return Number(
-        String(valor)
-        .replace(/\./g,"")
-        .replace(",",".")
-    );
-
+// --- FORMATADORES ---
+function dinheiro(valor) {
+    return Number(valor).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
-
-
-
-// ===============================
-// TROCA DE TELAS
-// ===============================
-
-
-function mostrarTela(id){
-
-    let telas = document.querySelectorAll(".tela");
-
-
-    telas.forEach(tela=>{
-
-        tela.classList.add("escondido");
-
-    });
-
-
-
-    let abrir = document.getElementById(id);
-
-
-    if(abrir){
-
-        abrir.classList.remove("escondido");
-
-    }
-
+function numero(valor) {
+    if (!valor) return 0;
+    return Number(String(valor).replace(/\./g, "").replace(",", "."));
 }
 
+// ==========================================
+// CONTROLADOR DE TELAS
+// ==========================================
+function mostrarTela(id) {
+    document.querySelectorAll(".tela").forEach(t => t.classList.add("escondido"));
+    let alvo = document.getElementById(id);
+    if (alvo) alvo.classList.remove("escondido");
 
-
-
-
-// ===============================
-// CALCULADORA NOTA FISCAL
-// ===============================
-
-
-function calcularNota(){
-
-
-    let tipo = document.getElementById(
-        "tipoGas"
-    ).value;
-
-
-
-    let valor = numero(
-        document.getElementById(
-            "valorNota"
-        ).value
-    );
-
-
-
-    let tabela = Number(
-        document.getElementById(
-            "tabelaP13"
-        ).value
-    );
-
-
-
-    if(valor <= 0){
-
-        document.getElementById(
-            "resultadoNota"
-        ).innerHTML =
-        "Digite um valor válido.";
-
-        return;
-
-    }
-
-
-
-
-    let resultado;
-
-
-
-    if(tipo === "P13"){
-
-
-        resultado = calcularP13(
-            valor,
-            tabela
-        );
-
-
-    }
-
-
-
-    if(tipo === "P20"){
-
-
-        resultado = calcularProdutoFixo(
-            valor,
-            130,
-            "P20"
-        );
-
-
-    }
-
-
-
-    if(tipo === "P45"){
-
-
-        resultado = calcularProdutoFixo(
-            valor,
-            300,
-            "P45"
-        );
-
-
-    }
-
-
-
-
-    mostrarResultadoNota(resultado);
-
-
-
+    if (id === 'nota') renderizarPrecosAdministrativos();
+    if (id === 'rampa') renderizarPainelRampasDinamicas();
+    if (id === 'dashboard') atualizarDashboardDados();
+    if (id === 'historico') renderizarListaHistorico();
 }
 
-
-
-
-
-
-
-// ===============================
-// TABELAS FISCAIS
-// ===============================
-
-function adicionarTabelasFiscais(){
-
-    const campo = document.getElementById("tabelaP13");
-
-    if(!campo) return;
-
-    const valores = [76, 78, 80, 82, 87, 95];
-
-    valores.forEach(valor => {
-
-        const existe = Array.from(campo.options)
-            .some(opcao => Number(opcao.value) === valor);
-
-        if(!existe){
-
-            const opcao = document.createElement("option");
-
-            opcao.value = valor;
-            opcao.textContent = valor;
-
-            campo.appendChild(opcao);
-
-        }
-
-    });
-
-}
-
-
-// ===============================
-// P20 / P45
-// ===============================
-
-
-function calcularProdutoFixo(
-    valor,
-    preco,
-    tipo
-){
-
-
-    let quantidade = Math.floor(
-        valor / preco
-    );
-
-
-    let total = quantidade * preco;
-
-
-
-    return {
-
-        tipo: tipo,
-
-        itens:[
-
-            {
-                quantidade:quantidade,
-                valor:preco
-            }
-
-        ],
-
-        total:total,
-
-        sobra:
-        Number(
-            (valor-total).toFixed(2)
-        )
-
-    };
-
-}
-
-
-
-
-
-
-// ===============================
-// P13 INTELIGENTE
-// ===============================
-
-
-function calcularP13(valor, minimo){
-
-
-    for(
-        let quantidade=Math.floor(valor/minimo);
-        quantidade>=0;
-        quantidade--
-    ){
-
-
-
-        let restante =
-        Number(
-            (
-                valor -
-                (quantidade*minimo)
-            )
-            .toFixed(2)
-        );
-
-
-
-
-        let complemento =
-        procurarComplemento(
-            restante,
-            minimo
-        );
-
-
-
-
-
-        if(
-            complemento ||
-            restante===0
-        ){
-
-
-
-            let itens=[];
-
-
-
-            if(quantidade>0){
-
-
-                itens.push({
-
-                    quantidade:quantidade,
-
-                    valor:minimo
-
-                });
-
-
-            }
-
-
-
-
-
-            if(complemento){
-
-
-                itens.push(complemento);
-
-
-            }
-
-
-
-
-
-
-            return {
-
-                tipo:"P13",
-
-                itens:itens,
-
-                total:valor,
-
-                sobra:0
-
-            };
-
-
-        }
-
-
-    }
-
-
-
-
-    return null;
-
-
-}
-
-
-
-
-
-
-
-// ===============================
-// PROCURA VALOR COMPLEMENTO
-// ===============================
-
-
-function procurarComplemento(
-    valor,
-    minimo
-){
-
-
-    if(valor <= 0){
-
-        return null;
-
-    }
-
-
-
-
-
-    for(
-        let quantidade=1;
-        quantidade<=200;
-        quantidade++
-    ){
-
-
-
-        let valorGas =
-        Number(
-            (
-                valor/quantidade
-            )
-            .toFixed(2)
-        );
-
-
-
-
-
-        if(
-            valorGas >= minimo &&
-            valorGas <= 120
-        ){
-
-
-
-            return {
-
-                quantidade:quantidade,
-
-                valor:valorGas
-
-            };
-
-
-        }
-
-
-    }
-
-
-
-
-    return null;
-
-
-}
-
-// ===============================
-// MOSTRAR RESULTADO NOTA
-// ===============================
-
-
-function mostrarResultadoNota(resultado){
-
-
-    let div = document.getElementById(
-        "resultadoNota"
-    );
-
-
-
-    if(!resultado){
-
-
-        div.innerHTML = 
-        `
-        <h3>
-        Não foi encontrada uma combinação.
-        </h3>
+// ==========================================
+// GESTÃO DE VALORES FISCAIS & CALCULADORA
+// ==========================================
+function renderizarPrecosAdministrativos() {
+    const corpo = document.getElementById("tabelaValoresFiscais");
+    if (!corpo) return;
+    corpo.innerHTML = "";
+
+    db.valores_fiscais.forEach(v => {
+        const tr = document.createElement("tr");
+        if (!v.ativo) tr.style.opacity = "0.4";
+
+        tr.innerHTML = `
+            <td style="font-weight:bold;">${v.produto}</td>
+            <td>${dinheiro(v.valor)}</td>
+            <td>
+                <span class="status-badge-fiscal" style="background:${v.ativo ? '#2e7d32' : '#c62828'};" onclick="alternarStatusPreco(${v.id})">
+                    ${v.ativo ? '● ATIVO (Na Tela)' : '○ OCULTO'}
+                </span>
+            </td>
+            <td><button class="btn-sm-del" onclick="removerPrecoFiscal(${v.id})">X</button></td>
         `;
-
-
-        return;
-
-    }
-
-
-
-
-    let conta="";
-
-
-
-
-    resultado.itens.forEach(item=>{
-
-
-        conta += `
-
-        ${item.quantidade} x 
-        ${dinheiro(item.valor)}
-        =
-        ${dinheiro(
-            item.quantidade * item.valor
-        )}
-
-        <br>
-
-        `;
-
-
+        corpo.appendChild(tr);
     });
 
+    atualizarSelectCalculadora();
+}
 
+function atualizarSelectCalculadora() {
+    const tipoAtual = document.getElementById("tipoGas").value;
+    const selectCalc = document.getElementById("tabelaP13");
+    if (!selectCalc) return;
+    selectCalc.innerHTML = "";
 
+    const filtrados = db.valores_fiscais.filter(v => v.ativo && v.produto === tipoAtual);
+    filtrados.forEach(v => {
+        const opt = document.createElement("option");
+        opt.value = v.valor;
+        opt.textContent = v.valor.toFixed(2);
+        selectCalc.appendChild(opt);
+    });
+}
 
+function adicionarValorFiscal() {
+    const prod = document.getElementById("configTipoGas").value;
+    const val = parseFloat(document.getElementById("novoValorFiscal").value);
+    if (!val || val <= 0) return alert("Insira um valor numérico válido.");
 
-    div.innerHTML = `
+    db.valores_fiscais.push({ id: Date.now(), produto: prod, valor: val, ativo: true });
+    document.getElementById("novoValorFiscal").value = "";
+    salvarInstanciaBD();
+    renderizarPrecosAdministrativos();
+}
 
+function alternarStatusPreco(id) {
+    const item = db.valores_fiscais.find(v => v.id === id);
+    if (item) { item.ativo = !item.ativo; salvarInstanciaBD(); renderizarPrecosAdministrativos(); }
+}
 
-    <h3>Conta:</h3>
+function removerPrecoFiscal(id) {
+    db.valores_fiscais = db.valores_fiscais.filter(v => v.id !== id);
+    salvarInstanciaBD();
+    renderizarPrecosAdministrativos();
+}
 
+function calcularNota() {
+    const tipo = document.getElementById("tipoGas").value;
+    const valorTotal = numero(document.getElementById("valorNota").value);
+    const precoTabela = parseFloat(document.getElementById("tabelaP13").value);
+    const divRes = document.getElementById("resultadoNota");
 
-    ${conta}
+    if (valorTotal <= 0 || isNaN(valorTotal)) {
+        divRes.innerHTML = "Por favor, digite um valor flutuante válido.";
+        return;
+    }
 
+    let resultado = null;
+    if (tipo === "P13") resultado = algoritmoP13Inteligente(valorTotal, precoTabela || 76);
+    if (tipo === "P20") resultado = algoritmoProdutoFixo(valorTotal, 130, "P20");
+    if (tipo === "P45") resultado = algoritmoProdutoFixo(valorTotal, 300, "P45");
 
-    <hr>
+    if (!resultado) {
+        divRes.innerHTML = "<h3>Combinação fiscal exata não encontrada para os tetos atuais.</h3>";
+        return;
+    }
 
+    let logHtml = "";
+    resultado.itens.forEach(i => {
+        logHtml += `${i.quantidade} un. x ${dinheiro(i.valor)} = ${dinheiro(i.quantidade * i.valor)}<br>`;
+    });
 
-    <h2>
-    Total:
-    ${dinheiro(resultado.total)}
-    </h2>
-
-
-
-    <h3>
-    Sobra:
-    ${dinheiro(resultado.sobra)}
-    </h3>
-
-
+    divRes.innerHTML = `
+        <h3>Conta:</h3>${logHtml}<hr style="border-color:#333;">
+        <h2>Total: ${dinheiro(resultado.total)}</h2>
+        <h3>Sobra Técnica: ${dinheiro(resultado.sobra)}</h3>
     `;
-
-
-
 }
 
+function algoritmoProdutoFixo(valor, preco, tipo) {
+    let qtd = Math.floor(valor / preco);
+    let tot = qtd * preco;
+    return { tipo: tipo, itens: [{ quantidade: qtd, valor: preco }], total: tot, sobra: Number((valor - tot).toFixed(2)) };
+}
 
+function algoritmoP13Inteligente(valor, minimo) {
+    for (let qtd = Math.floor(valor / minimo); qtd >= 0; qtd--) {
+        let restante = Number((valor - (qtd * minimo)).toFixed(2));
+        let comp = rastrearComplemento(restante, minimo);
+        if (comp || restante === 0) {
+            let itens = [];
+            if (qtd > 0) itens.push({ quantidade: qtd, valor: minimo });
+            if (comp) itens.push(comp);
+            return { tipo: "P13", itens: itens, total: valor, sobra: 0 };
+        }
+    }
+    return null;
+}
 
+function rastrearComplemento(valor, minimo) {
+    if (valor <= 0) return null;
+    for (let qtd = 1; qtd <= 200; qtd++) {
+        let valorGas = Number((valor / qtd).toFixed(2));
+        if (valorGas >= minimo && valorGas <= 120) return { quantidade: qtd, valor: valorGas };
+    }
+    return null;
+}
 
+// ==========================================
+// MONITORAMENTO GEOMÉTRICO DE RAMPAS
+// ==========================================
+function renderizarPainelRampasDinamicas() {
+    const container = document.getElementById("areaRampasDinamicas");
+    if (!container) return;
+    container.innerHTML = "";
 
+    let totais = { P13_CHEIO: 0, P13_VAZIO: 0, P20_CHEIO: 0, P20_VAZIO: 0, P45_CHEIO: 0, P45_VAZIO: 0 };
 
+    db.rampas.forEach(rampa => {
+        const divBox = document.createElement("div");
+        divBox.className = "container-rampa-modulo";
 
+        let linhas = "";
+        rampa.itens.forEach(i => {
+            const totItem = i.fileiras * i.qtd_fileira;
+            totais[`${i.produto}_${i.situacao}`] += totItem;
 
-// ===============================
-// CALCULADORA DE RAMPA
-// ===============================
-
-
-function calcularRampa(){
-
-
-
-    let campos=[
-
-
-        [
-        "rAltura",
-        "rFileira",
-        "rColuna"
-        ],
-
-
-
-        [
-        "extraAltura1",
-        "extraFileira1",
-        "extraColuna1"
-        ],
-
-
-
-        [
-        "extraAltura2",
-        "extraFileira2",
-        "extraColuna2"
-        ]
-
-    ];
-
-
-
-
-
-    let total=0;
-
-    let conta="";
-
-
-
-
-
-    campos.forEach(campo=>{
-
-
-        let altura =
-        Number(
-            document.getElementById(campo[0]).value
-        ) || 0;
-
-
-
-        let fileira =
-        Number(
-            document.getElementById(campo[1]).value
-        ) || 0;
-
-
-
-        let coluna =
-        Number(
-            document.getElementById(campo[2]).value
-        ) || 0;
-
-
-
-
-
-        if(
-            altura &&
-            fileira &&
-            coluna
-        ){
-
-
-            let resultado =
-            altura *
-            fileira *
-            coluna;
-
-
-
-
-            total += resultado;
-
-
-
-
-            conta += `
-
-            ${altura} x
-            ${fileira} x
-            ${coluna}
-            =
-            ${resultado}
-
-            <br>
-
+            linhas += `
+                <tr>
+                    <td style="font-weight:bold;">${i.produto}</td>
+                    <td><span class="${i.situacao === 'CHEIO' ? 'badge-cheio' : 'badge-vazio'}">${i.situacao}</span></td>
+                    <td><input type="number" style="width:65px; text-align:center;" value="${i.fileiras}" onchange="atualizarEspecificidadeLinha(${rampa.id}, ${i.id}, 'fileiras', this.value)"></td>
+                    <td><input type="number" style="width:65px; text-align:center;" value="${i.qtd_fileira}" onchange="atualizarEspecificidadeLinha(${rampa.id}, ${i.id}, 'qtd_fileira', this.value)"></td>
+                    <td style="font-weight:bold; color:#e00000;">${totItem}</td>
+                    <td><button class="btn-sm-del" onclick="removerLinhaDireta(${rampa.id}, ${i.id})">X</button></td>
+                </tr>
             `;
-
-
-
-        }
-
-
-
-    });
-
-
-
-
-
-
-
-    let resultado =
-    document.getElementById(
-        "resultadoRampa"
-    );
-
-
-
-
-
-    if(total===0){
-
-
-        resultado.innerHTML =
-        "Digite os valores da rampa.";
-
-
-        return;
-
-    }
-
-
-
-
-
-
-    resultado.innerHTML = `
-
-
-    <h3>
-    Conta:
-    </h3>
-
-
-    ${conta}
-
-
-
-    <hr>
-
-
-    <h2>
-    Total:
-    ${total}
-    gases
-    </h2>
-
-
-    `;
-
-
-
-
-}
-
-
-
-
-
-
-
-
-// ===============================
-// CONTAGEM MANUAL
-// ===============================
-
-
-
-function adicionarContagem(){
-
-
-
-    let produto =
-    document.getElementById(
-        "produtoContagem"
-    ).value;
-
-
-
-
-    let quantidade =
-    Number(
-        document.getElementById(
-            "quantidadeContagem"
-        ).value
-    );
-
-
-
-
-
-    if(!quantidade){
-
-
-        alert(
-            "Informe a quantidade"
-        );
-
-
-        return;
-
-
-    }
-
-
-
-
-
-    contagem.push({
-
-
-        produto:produto,
-
-
-        quantidade:quantidade,
-
-
-        data:
-        new Date()
-        .toLocaleString(
-            "pt-BR"
-        )
-
-
-    });
-
-
-
-
-
-    salvarContagem();
-
-
-    mostrarContagem();
-
-
-    atualizarResumo();
-
-
-
-}
-
-
-
-
-
-
-function salvarContagem(){
-
-
-    localStorage.setItem(
-
-        "contagemGas",
-
-        JSON.stringify(contagem)
-
-    );
-
-
-}
-
-
-
-
-
-
-
-
-
-function mostrarContagem(){
-
-
-
-    let tabela =
-    document.getElementById(
-        "tabelaContagem"
-    );
-
-
-
-
-    if(!tabela) return;
-
-
-
-
-
-    tabela.innerHTML="";
-
-
-
-
-
-
-    contagem.forEach(
-        (item,index)=>{
-
-
-        tabela.innerHTML += `
-
-
-        <tr>
-
-
-        <td>
-        ${item.produto}
-        </td>
-
-
-        <td>
-        ${item.quantidade}
-        </td>
-
-
-
-        <td>
-
-        <button onclick="
-        removerContagem(${index})
-        ">
-
-        X
-
-        </button>
-
-        </td>
-
-
-        </tr>
-
-
+        });
+
+        divBox.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #333; padding-bottom:10px; margin-bottom:15px;">
+                <h3 style="margin:0; text-transform:uppercase; color:#fff;">🚛 ${rampa.nome}</h3>
+                <div>
+                    <button onclick="duplicarRampaFisica(${rampa.id})" class="btn-secundario" style="padding:6px 12px; font-size:12px;">Duplicar</button>
+                    <button onclick="removerRampaCompleta(${rampa.id})" class="btn-sm-del" style="padding:6px 12px; font-size:12px;">Remover</button>
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr><th>Produto</th><th>Situação</th><th>Fileiras</th><th>Qtd/Fil</th><th>Total</th><th>Ação</th></tr>
+                </thead>
+                <tbody>${linhas || '<tr><td colspan="6" style="color:#aaa;">Rampa vazia. Lance itens abaixo.</td></tr>'}</tbody>
+            </table>
+            <div class="linha-adicionar-direto">
+                <select id="addProd-${rampa.id}"><option>P13</option><option>P20</option><option>P45</option></select>
+                <select id="addSit-${rampa.id}"><option value="CHEIO">🔴 CHEIO</option><option value="VAZIO">⚪ VAZIO</option></select>
+                <input type="number" id="addFil-${rampa.id}" placeholder="Fil.">
+                <input type="number" id="addQtd-${rampa.id}" placeholder="Qtd.">
+                <button onclick="inserirLinhaNaRampa(${rampa.id})">＋ Inserir</button>
+            </div>
         `;
-
-
+        container.appendChild(divBox);
     });
 
-
-
-}
-
-
-
-
-
-
-function removerContagem(index){
-
-
-
-    contagem.splice(
-        index,
-        1
-    );
-
-
-    salvarContagem();
-
-
-    mostrarContagem();
-
-
-    atualizarResumo();
-
-
-
-}
-
-
-
-
-
-
-
-
-// ===============================
-// RESUMO
-// ===============================
-
-
-
-function atualizarResumo(){
-
-
-
-    let resumo={
-
-
-        "P13 Cheio":0,
-
-        "P13 Vazio":0,
-
-        "P20 Cheio":0,
-
-        "P20 Vazio":0,
-
-        "P45 Cheio":0,
-
-        "P45 Vazio":0
-
-
-    };
-
-
-
-
-
-
-
-    contagem.forEach(item=>{
-
-
-        if(resumo[item.produto] !== undefined){
-
-
-            resumo[item.produto]
-            +=
-            item.quantidade;
-
-
-        }
-
-
-    });
-
-
-
-
-
-
-    let html="";
-
-    let total=0;
-
-
-
-
-
-    Object.keys(resumo)
-    .forEach(nome=>{
-
-
-        total += resumo[nome];
-
-
-
-        html += `
-
-        <p>
-
-        <b>${nome}</b>:
-        ${resumo[nome]}
-
-        </p>
-
-        `;
-
-
-    });
-
-
-
-
-
-
-    html += `
-
-
-    <hr>
-
-
-    <h2>
-
-    Total Geral:
-    ${total}
-
-    </h2>
-
-
-    `;
-
-
-
-
-
-
-
-    let div =
-    document.getElementById(
-        "resumo"
-    );
-
-
-
-    if(div){
-
-        div.innerHTML=html;
-
-    }
-
-
-
-
-    atualizarDashboard(resumo);
-
-
-
-    return resumo;
-
-
-
-}
-
-// ===============================
-// DASHBOARD
-// ===============================
-
-
-function atualizarDashboard(resumo){
-
-
-    let campos={
-
-
-        "P13 Cheio":"dashP13Cheio",
-
-        "P13 Vazio":"dashP13Vazio",
-
-        "P20 Cheio":"dashP20Cheio",
-
-        "P20 Vazio":"dashP20Vazio",
-
-        "P45 Cheio":"dashP45Cheio",
-
-        "P45 Vazio":"dashP45Vazio"
-
-
-    };
-
-
-
-
-
-    Object.keys(campos)
-    .forEach(nome=>{
-
-
-        let elemento =
-        document.getElementById(
-            campos[nome]
-        );
-
-
-
-        if(elemento){
-
-
-            elemento.innerHTML =
-            resumo[nome];
-
-
-        }
-
-
-    });
-
-
-
-
-
-    let total =
-    Object.values(resumo)
-    .reduce(
-        (a,b)=>a+b,
-        0
-    );
-
-
-
-
-
-    let totalElemento =
-    document.getElementById(
-        "dashTotal"
-    );
-
-
-
-    if(totalElemento){
-
-
-        totalElemento.innerHTML =
-        total;
-
-
-    }
-
-
-}
-
-
-
-
-
-
-
-
-
-// ===============================
-// HISTÓRICO
-// ===============================
-
-
-
-function salvarHistorico(){
-
-
-
-    let resumo =
-    atualizarResumo();
-
-
-
-
-
-    historico.push({
-
-
-        data:
-
-        new Date()
-        .toLocaleString(
-            "pt-BR"
-        ),
-
-
-        resumo:resumo
-
-
-    });
-
-
-
-
-
-
-
-    localStorage.setItem(
-
-        "historicoGas",
-
-        JSON.stringify(historico)
-
-    );
-
-
-
-
-    mostrarHistorico();
-
-
-}
-
-
-
-
-
-
-
-
-function mostrarHistorico(){
-
-
-
-    let div =
-    document.getElementById(
-        "listaHistorico"
-    );
-
-
-
-
-
-    if(!div) return;
-
-
-
-
-
-    div.innerHTML="";
-
-
-
-
-
-
-    historico.forEach(item=>{
-
-
-        div.innerHTML += `
-
-
-        <div class="resultado">
-
-
-        <b>
-        ${item.data}
-        </b>
-
-
-        <br><br>
-
-
-        ${JSON.stringify(
-            item.resumo
-        )}
-
-
-
-        </div>
-
-
-
-        `;
-
-
-    });
-
-
-
-}
-
-
-
-
-
-
-
-
-
-// ===============================
-// PDF
-// ===============================
-
-
-
-function gerarPDF(){
-
-
-
-    const {jsPDF}=window.jspdf;
-
-
-
-    let pdf =
-    new jsPDF();
-
-
-
-
-
-    let resumo =
-    atualizarResumo();
-
-
-
-
-
-
-    pdf.text(
-        "São Jorge Gás - Fechamento",
-        10,
-        20
-    );
-
-
-
-
-
-    let y=40;
-
-
-
-
-
-    Object.keys(resumo)
-    .forEach(nome=>{
-
-
-        pdf.text(
-
-        nome+
-        ": "+
-        resumo[nome],
-
-        10,
-
-        y
-
-        );
-
-
-        y+=10;
-
-
-    });
-
-
-
-
-
-    pdf.save(
-        "fechamento-gas.pdf"
-    );
-
-
-
-}
-
-
-
-
-
-
-
-
-// ===============================
-// BACKUP
-// ===============================
-
-
-
-function exportarBackup(){
-
-
-
-    let dados={
-
-
-        contagem:contagem,
-
-
-        historico:historico
-
-
-    };
-
-
-
-
-
-
-    let arquivo =
-    new Blob(
-
-        [
-        JSON.stringify(
-            dados,
-            null,
-            2
-        )
-        ],
-
-        {
-        type:
-        "application/json"
-        }
-
-    );
-
-
-
-
-
-
-    let link =
-    document.createElement(
-        "a"
-    );
-
-
-
-    link.href =
-    URL.createObjectURL(
-        arquivo
-    );
-
-
-
-    link.download =
-    "backup-sao-jorge.json";
-
-
-
-    link.click();
-
-
-
-}
-
-
-
-
-
-
-
-
-// ===============================
-// IA SÃO JORGE
-// ===============================
-
-
-
-function perguntarIA(){
-
-
-
-    let campo =
-    document.getElementById(
-        "perguntaIA"
-    );
-
-
-
-    let pergunta =
-    campo.value.trim();
-
-
-
-
-
-    if(!pergunta)
-    return;
-
-
-
-
-
-    let texto =
-    pergunta.toLowerCase();
-
-
-
-
-    let resposta="";
-
-
-
-
-
-
-
-    if(
-    texto.includes("rampa")
-    ){
-
-
-        resposta=`
-
-        Para calcular a rampa:
-
-        1º Informe altura.
-
-        2º Informe fileira.
-
-        3º Informe coluna.
-
-        O sistema faz:
-
-        Altura × Fileira × Coluna.
-
-        Depois soma as partes extras.
-
-        `;
-
-
-    }
-
-
-
-
-
-
-    else if(
-    texto.includes("nota")
-    ||
-    texto.includes("calculo")
-    ){
-
-
-        resposta=`
-
-        Para calcular uma nota:
-
-        1º Escolha P13, P20 ou P45.
-
-        2º Se for P13 escolha
-        a tabela 76, 78, 80, 82, 87 ou 95.
-
-        3º Informe o valor.
-
-        Eu procuro a melhor combinação
-        respeitando os limites.
-
-        Depois mostro a conta passo a passo.
-
-        `;
-
-
-    }
-
-
-
-
-
-
-    else if(
-    texto.includes("contagem")
-    ||
-    texto.includes("fechamento")
-    ){
-
-
-        resposta=`
-
-        A contagem deve ser separada:
-
-        P13 Cheio e Vazio.
-
-        P20 Cheio e Vazio.
-
-        P45 Cheio e Vazio.
-
-        Assim o fechamento fica correto.
-
-        `;
-
-
-    }
-
-
-
-
-
-
-    else if(
-    texto.includes("telefone")
-    ||
-    texto.includes("contato")
-    ){
-
-
-        resposta=`
-
-        O contato cadastrado da São Jorge Gás:
-
-        📞 (31) 3817-2759
-
-        `;
-
-
-    }
-
-
-
-
-
-
-
-    else{
-
-
-        resposta=`
-
-        Posso ajudar com:
-
-        • cálculo de notas;
-        • tabela fiscal;
-        • rampa;
-        • contagem;
-        • fechamento;
-        • explicações passo a passo.
-
-        Me explique sua dúvida que eu ajudo.
-
-        `;
-
-
-    }
-
-
-
-
-
-
-    document.getElementById(
-        "chatIA"
-    ).innerHTML += `
-
-
-
-    <p>
-
-    <b>Você:</b>
-    ${pergunta}
-
-    </p>
-
-
-
-    <p>
-
-    <b>São Jorge:</b>
-    ${resposta}
-
-    </p>
-
-
-
-    <hr>
-
-
-    `;
-
-
-
-
-
-
-    campo.value="";
-
-
-}
-
-
-
-
-
-
-
-
-// ===============================
-// INICIAR SISTEMA
-// ===============================
-
-
-
-window.onload=function(){
-
-    adicionarTabelasFiscais();
-
-    mostrarContagem();
-
-
-    atualizarResumo();
-
-
-    mostrarHistorico();
-
-
-    mostrarTela(
-        "dashboard"
-    );
-
-
-}
-
-
-}
