@@ -504,4 +504,3 @@ window.onload = function(){
   mostrarTela("dashboard");
   console.log("✅ IA São Jorge pronta!");
 };
-
