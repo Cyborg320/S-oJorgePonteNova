@@ -1,183 +1,134 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>São Jorge Gás</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>São Jorge Gás</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<header class="topo">
+  <div class="logo"><img src="logo.png" alt="São Jorge Gás"></div>
+  <div>
+    <h1>São Jorge Gás</h1>
+    <p>Sistema de Controle</p>
+  </div>
+</header>
+<nav class="menu">
+  <button onclick="mostrarTela('dashboard')">🏠 Dashboard</button>
+  <button onclick="mostrarTela('nota')">📄 Nota Fiscal</button>
+  <button onclick="mostrarTela('rampa')">🚛 Rampa</button>
+  <button onclick="mostrarTela('contagem')">📦 Contagem</button>
+  <button onclick="mostrarTela('historico')">📜 Histórico</button>
+  <button onclick="mostrarTela('ia')">🤖 Assistente</button>
+</nav>
+<main>
+  <!-- Dashboard -->
+  <section id="dashboard" class="tela">
+    <h2>Dashboard</h2>
+    <div class="cards">
+      <div class="card"><h3>P13 Cheio</h3><span id="dashP13Cheio">0</span></div>
+      <div class="card"><h3>P13 Vazio</h3><span id="dashP13Vazio">0</span></div>
+      <div class="card"><h3>P20 Cheio</h3><span id="dashP20Cheio">0</span></div>
+      <div class="card"><h3>P20 Vazio</h3><span id="dashP20Vazio">0</span></div>
+      <div class="card"><h3>P45 Cheio</h3><span id="dashP45Cheio">0</span></div>
+      <div class="card"><h3>P45 Vazio</h3><span id="dashP45Vazio">0</span></div>
+    </div>
+    <div class="resultado"><h3>Total Geral</h3><h1 id="dashTotal">0</h1></div>
+  </section>
 
-    <header class="topo">
-        <div class="logo">
-            <img src="logo.png" alt="São Jorge Gás" onerror="this.style.display='none'">
-        </div>
-        <div>
-            <h1>São Jorge Gás</h1>
-            <p>Sistema de Controle</p>
-        </div>
-    </header>
+  <!-- Nota Fiscal -->
+  <section id="nota" class="tela escondido">
+    <h2>Calculadora Nota Fiscal</h2>
+    <label>Tipo de Gás</label>
+    <select id="tipoGas">
+      <option value="P13">P13</option>
+      <option value="P20">P20</option>
+      <option value="P45">P45</option>
+    </select>
+    <label>Tabela P13</label>
+    <select id="tabelaP13">
+      <option value="76">76</option><option value="78">78</option>
+      <option value="80">80</option><option value="82">82</option>
+      <option value="85">85</option><option value="87">87</option>
+      <option value="88">88</option><option value="90">90</option>
+      <option value="91">91</option><option value="95">95</option>
+      <option value="97">97</option>
+    </select>
+    <label>Valor da Nota</label>
+    <input id="valorNota" placeholder="Digite o valor">
+    <button onclick="calcularNota()">Calcular</button>
+    <div id="resultadoNota" class="resultado"></div>
+  </section>
 
-    <nav class="menu">
-        <button onclick="mostrarTela('dashboard')">🏠 Dashboard</button>
-        <button onclick="mostrarTela('nota')">📄 Nota Fiscal</button>
-        <button onclick="mostrarTela('rampa')">🚛 Rampa</button>
-        <button onclick="mostrarTela('contagem')">📦 Contagem</button>
-        <button onclick="mostrarTela('historico')">📜 Histórico</button>
-        <button onclick="mostrarTela('ia')">🤖 Assistente</button>
-    </nav>
+  <!-- Rampa -->
+  <section id="rampa" class="tela escondido">
+    <h2>🚛 Calculadora de Rampa</h2>
+    <p>Informe: Altura × Fileira × Coluna</p>
+    <div class="grid">
+      <input id="rAltura" placeholder="Altura">
+      <input id="rFileira" placeholder="Fileira">
+      <input id="rColuna" placeholder="Coluna">
+    </div>
+    <h3>Parte Extra 1</h3><div class="grid"><input id="extraAltura1"><input id="extraFileira1"><input id="extraColuna1"></div>
+    <h3>Parte Extra 2</h3><div class="grid"><input id="extraAltura2"><input id="extraFileira2"><input id="extraColuna2"></div>
+    <h3>Parte Extra 3</h3><div class="grid"><input id="extraAltura3"><input id="extraFileira3"><input id="extraColuna3"></div>
+    <h3>Parte Extra 4</h3><div class="grid"><input id="extraAltura4"><input id="extraFileira4"><input id="extraColuna4"></div>
+    <label>Tipo de Rampa</label>
+    <select id="tipoRampa">
+      <option value="P13 Cheio">P13 Cheio</option>
+      <option value="P13 Vazio">P13 Vazio</option>
+    </select>
+    <button onclick="calcularRampa()">Calcular Rampa</button>
+    <div id="resultadoRampa" class="resultado"></div>
+  </section>
 
-    <main>
+  <!-- Contagem -->
+  <section id="contagem" class="tela escondido">
+    <h2>📦 Contagem Manual</h2>
+    <label>Produto</label>
+    <select id="produtoContagem">
+      <option>P13 Cheio</option><option>P13 Vazio</option>
+      <option>P20 Cheio</option><option>P20 Vazio</option>
+      <option>P45 Cheio</option><option>P45 Vazio</option>
+    </select>
+    <input id="quantidadeContagem" type="number" placeholder="Quantidade">
+    <button onclick="adicionarContagem()">Adicionar</button>
+    <table>
+      <thead><tr><th>Produto</th><th>Quantidade</th><th>Ação</th></tr></thead>
+      <tbody id="tabelaContagem"></tbody>
+    </table>
+    <div class="resultado"><h2>Resumo</h2><div id="resumo"></div></div>
+  </section>
 
-        <!-- ===================== DASHBOARD ===================== -->
-        <section id="dashboard" class="tela">
-            <h2>Dashboard</h2>
-            <div class="cards">
-                <div class="card"><h3>P13 Cheio</h3><span id="dashP13Cheio">0</span></div>
-                <div class="card"><h3>P13 Vazio</h3><span id="dashP13Vazio">0</span></div>
-                <div class="card"><h3>P20 Cheio</h3><span id="dashP20Cheio">0</span></div>
-                <div class="card"><h3>P20 Vazio</h3><span id="dashP20Vazio">0</span></div>
-                <div class="card"><h3>P45 Cheio</h3><span id="dashP45Cheio">0</span></div>
-                <div class="card"><h3>P45 Vazio</h3><span id="dashP45Vazio">0</span></div>
-            </div>
-            <div class="resultado">
-                <h3>Total Geral</h3>
-                <h1 id="dashTotal">0</h1>
-            </div>
-        </section>
+  <!-- Histórico -->
+  <section id="historico" class="tela escondido">
+    <h2>📜 Histórico</h2>
+    <button onclick="salvarHistorico()">Salvar Fechamento</button>
+    <button onclick="gerarPDF()">Gerar PDF</button>
+    <button onclick="exportarBackup()">Exportar Backup</button>
+    <div id="listaHistorico" class="resultado"></div>
+  </section>
 
-        <!-- ===================== NOTA FISCAL ===================== -->
-        <section id="nota" class="tela escondido">
-            <h2>Calculadora Nota Fiscal</h2>
-            
-            <div class="painel-valores-fiscal">
-                <h3>Gerenciador de Valores de Apoio (Cupom Fiscal)</h3>
-                <div class="grid-fiscal-inputs">
-                    <select id="configTipoGas">
-                        <option value="P13">P13</option>
-                        <option value="P20">P20</option>
-                        <option value="P45">P45</option>
-                    </select>
-                    <input type="number" id="novoValorFiscal" step="0.01" placeholder="Valor R$ (Ex: 78.00)">
-                    <button onclick="adicionarValorFiscal()">＋ Add Preço</button>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Produto</th>
-                            <th>Preço Unitário</th>
-                            <th>Status Operacional</th>
-                            <th>Remover</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabelaValoresFiscais"></tbody>
-                </table>
-            </div>
+  <!-- Assistente → Ajustado sem mudar estrutura -->
+  <section id="ia" class="tela escondido">
+    <h2>🤖 Assistente São Jorge</h2>
+    <div id="chatIA" class="chat">
+      <p><b>São Jorge 💚:</b> Olá! Sou seu assistente. Posso ajudar com cálculos, rampa, nota, contagem e muito mais! 😊</p>
+      <hr>
+    </div>
+    <input 
+      id="perguntaIA" 
+      placeholder="Digite sua pergunta aqui e aperte Enter..."
+      onkeypress="if(event.key === 'Enter') perguntarIA();"
+    >
+    <button onclick="perguntarIA()">Enviar 🚀</button>
+  </section>
+</main>
 
-            <hr class="divisor">
+<footer><p>São Jorge Gás - Sistema de Controle</p></footer>
 
-            <label>Tipo de Gás</label>
-            <select id="tipoGas" onchange="atualizarSelectCalculadora()">
-                <option value="P13">P13</option>
-                <option value="P20">P20</option>
-                <option value="P45">P45</option>
-            </select>
-
-            <label>Tabela de Preços Ativos</label>
-            <select id="tabelaP13"></select>
-
-            <label>Valor da Nota</label>
-            <input id="valorNota" placeholder="Digite o valor">
-
-            <button onclick="calcularNota()">Calcular</button>
-            <div id="resultadoNota" class="resultado"></div>
-        </section>
-
-        <!-- ===================== RAMPA ===================== -->
-        <section id="rampa" class="tela escondido">
-            <h2>🚛 Calculadora de Rampa</h2>
-            <div class="acoes-rampa">
-                <button onclick="criarNovaRampa()" class="btn-secundario">＋ Nova Rampa</button>
-                <button onclick="limparTodasAsRampas()">Limpar Todas as Rampas</button>
-            </div>
-            
-            <div id="areaRampasDinamicas"></div>
-
-            <div class="resultado">
-                <h3>Resumo Consolidado das Rampas</h3>
-                <div id="resumoCalculadoRampas"></div>
-            </div>
-        </section>
-
-        <!-- ===================== CONTAGEM MANUAL / CONFERÊNCIA ===================== -->
-        <section id="contagem" class="tela escondido">
-            <h2>📦 Conferência e Fechamento Seguro</h2>
-            <p style="margin-bottom: 15px; color: #ccc; font-size: 14px;">Comparação em duas etapas para mitigar quebras de estoque de pátio.</p>
-
-            <div class="grid-conferencia">
-                <div class="bloco-conferencia">
-                    <h3>Etapa 1: Planejado (Rampas)</h3>
-                    <button onclick="puxarDadosDasRampasParaConferencia()" class="btn-secundario" style="margin-bottom: 10px; width: 100%;">Sincronizar com as Rampas</button>
-                    <div class="inputs-conferencia">
-                        <div><label>P13 Cheio</label><input type="number" id="planP13Cheio" value="0"></div>
-                        <div><label>P13 Vazio</label><input type="number" id="planP13Vazio" value="0"></div>
-                        <div><label>P20 Cheio</label><input type="number" id="planP20Cheio" value="0"></div>
-                        <div><label>P20 Vazio</label><input type="number" id="planP20Vazio" value="0"></div>
-                        <div><label>P45 Cheio</label><input type="number" id="planP45Cheio" value="0"></div>
-                        <div><label>P45 Vazio</label><input type="number" id="planP45Vazio" value="0"></div>
-                    </div>
-                </div>
-                <div class="bloco-conferencia alerta">
-                    <h3>Etapa 2: Conferido Físico (Pátio)</h3>
-                    <div class="inputs-conferencia" style="margin-top: 48px;">
-                        <div><label>P13 Cheio</label><input type="number" id="confP13Cheio" value="0"></div>
-                        <div><label>P13 Vazio</label><input type="number" id="confP13Vazio" value="0"></div>
-                        <div><label>P20 Cheio</label><input type="number" id="confP20Cheio" value="0"></div>
-                        <div><label>P20 Vazio</label><input type="number" id="confP20Vazio" value="0"></div>
-                        <div><label>P45 Cheio</label><input type="number" id="confP45Cheio" value="0"></div>
-                        <div><label>P45 Vazio</label><input type="number" id="confP45Vazio" value="0"></div>
-                    </div>
-                </div>
-            </div>
-
-            <button onclick="executarAuditoriaCruzada()" style="width: 100%; margin-top: 15px;">Rodar Análise de Divergências</button>
-            <div id="resultadoConferencia" class="resultado" style="display: none;"></div>
-        </section>
-
-        <!-- ===================== HISTÓRICO ===================== -->
-        <section id="historico" class="tela escondido">
-            <h2>📜 Histórico</h2>
-            <div class="botoes-historico">
-                <button onclick="salvarHistorico()">Salvar Fechamento</button>
-                <button onclick="gerarPDF()">Gerar PDF</button>
-            </div>
-            <div id="listaHistorico" class="resultado"></div>
-        </section>
-
-        <!-- ===================== ASSISTENTE ===================== -->
-        <section id="ia" class="tela escondido">
-            <h2>🤖 Assistente São Jorge</h2>
-            <div id="chatIA" class="chat">
-                <p>Olá! Sou o assistente do sistema São Jorge Gás.</p>
-                <p>Posso ajudar com cálculos, rampa, contagem e dúvidas do sistema.</p>
-            </div>
-            <input id="perguntaIA" placeholder="Digite sua pergunta aqui">
-            <button onclick="perguntarIA()">Enviar</button>
-        </section>
-
-    </main>
-
-    <footer>
-        <p>São Jorge Gás - Sistema de Controle</p>
-    </footer>
-
-    <script src="https://cloudflare.com"></script>
-    <script src="script.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="script.js"></script>
 </body>
-</html>
-
-
-
-</body>
-
 </html>
